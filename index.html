@@ -1301,7 +1301,6 @@
     <div class="end-word" id="end-word"></div>
     <button class="share-btn" onclick="shareResult()">📤 Share Result</button>
     <button class="share-btn" style="background:var(--correct)" onclick="closeEndOverlay();showLeaderboard()">🏆 View Leaderboard</button>
-    <button class="share-btn red" onclick="closeEndOverlay()">Play Again</button>
   </div>
 </div>
 
@@ -2369,6 +2368,50 @@ const VALID_WORDS = new Set([
 ]);
 
 // ─────────────────────────────────────────
+// ADDITIONAL COMMON WORDS (patch for missing entries)
+// ─────────────────────────────────────────
+VALID_WORDS.add("ALPHA");VALID_WORDS.add("ALTER");VALID_WORDS.add("APART");VALID_WORDS.add("BASIC");VALID_WORDS.add("BEACH");VALID_WORDS.add("BEGIN");VALID_WORDS.add("BIBLE");VALID_WORDS.add("BIRTH");VALID_WORDS.add("BLADE");VALID_WORDS.add("BLAME");VALID_WORDS.add("BLAND");VALID_WORDS.add("BLANK");
+VALID_WORDS.add("BLAST");VALID_WORDS.add("BLESS");VALID_WORDS.add("BLIND");VALID_WORDS.add("BOOST");VALID_WORDS.add("BOOTH");VALID_WORDS.add("BRAIN");VALID_WORDS.add("BRIEF");VALID_WORDS.add("BROOK");VALID_WORDS.add("BRUSH");VALID_WORDS.add("BUNCH");VALID_WORDS.add("CHARM");VALID_WORDS.add("CHEST");
+VALID_WORDS.add("CHINA");VALID_WORDS.add("CHUNK");VALID_WORDS.add("CIRCA");VALID_WORDS.add("CLASS");VALID_WORDS.add("CLEAN");VALID_WORDS.add("CLEAR");VALID_WORDS.add("CLIMB");VALID_WORDS.add("CLING");VALID_WORDS.add("CLOTH");VALID_WORDS.add("COLON");VALID_WORDS.add("COMET");VALID_WORDS.add("COVER");
+VALID_WORDS.add("CRAFT");VALID_WORDS.add("CRAWL");VALID_WORDS.add("CRIME");VALID_WORDS.add("CRUEL");VALID_WORDS.add("DEATH");VALID_WORDS.add("DEBUT");VALID_WORDS.add("DELAY");VALID_WORDS.add("DIARY");VALID_WORDS.add("DRANK");VALID_WORDS.add("DRIFT");VALID_WORDS.add("DRILL");VALID_WORDS.add("DRINK");
+VALID_WORDS.add("DRUNK");VALID_WORDS.add("DYING");VALID_WORDS.add("ELECT");VALID_WORDS.add("EMBED");VALID_WORDS.add("ENEMY");VALID_WORDS.add("ENJOY");VALID_WORDS.add("ENTER");VALID_WORDS.add("EQUIP");VALID_WORDS.add("ERECT");VALID_WORDS.add("EXERT");VALID_WORDS.add("EXIST");VALID_WORDS.add("FAITH");
+VALID_WORDS.add("FLEET");VALID_WORDS.add("FLESH");VALID_WORDS.add("FLOAT");VALID_WORDS.add("FLOOD");VALID_WORDS.add("FLOOR");VALID_WORDS.add("FLORA");VALID_WORDS.add("FLOUR");VALID_WORDS.add("FOCAL");VALID_WORDS.add("FOCUS");VALID_WORDS.add("FORTH");VALID_WORDS.add("FORTY");VALID_WORDS.add("FRANK");
+VALID_WORDS.add("FRAUD");VALID_WORDS.add("FRUIT");VALID_WORDS.add("FUNNY");VALID_WORDS.add("GIANT");VALID_WORDS.add("GLASS");VALID_WORDS.add("GLEAM");VALID_WORDS.add("GLIDE");VALID_WORDS.add("GLOBE");VALID_WORDS.add("GRASP");VALID_WORDS.add("GRASS");VALID_WORDS.add("GRAVE");VALID_WORDS.add("GREAT");
+VALID_WORDS.add("GREEN");VALID_WORDS.add("GROUP");VALID_WORDS.add("GUARD");VALID_WORDS.add("GUESS");VALID_WORDS.add("GUEST");VALID_WORDS.add("GUIDE");VALID_WORDS.add("GUILD");VALID_WORDS.add("GUILT");VALID_WORDS.add("GUITAR");VALID_WORDS.add("HAPPY");VALID_WORDS.add("HELLO");VALID_WORDS.add("HOBBY");
+VALID_WORDS.add("INTRO");VALID_WORDS.add("IVORY");VALID_WORDS.add("JELLY");VALID_WORDS.add("JEWEL");VALID_WORDS.add("JOINT");VALID_WORDS.add("JOKER");VALID_WORDS.add("LEASE");VALID_WORDS.add("LEAST");VALID_WORDS.add("LOFTY");VALID_WORDS.add("LOGIN");VALID_WORDS.add("LOVER");VALID_WORDS.add("LOWER");
+VALID_WORDS.add("LOYAL");VALID_WORDS.add("LUNCH");VALID_WORDS.add("LUNGE");VALID_WORDS.add("LYING");VALID_WORDS.add("MARRY");VALID_WORDS.add("METER");VALID_WORDS.add("MIMIC");VALID_WORDS.add("MOTOR");VALID_WORDS.add("MOUNT");VALID_WORDS.add("MOVIE");VALID_WORDS.add("MURAL");VALID_WORDS.add("NANNY");
+VALID_WORDS.add("NAVAL");VALID_WORDS.add("NURSE");VALID_WORDS.add("OWNER");VALID_WORDS.add("PAINT");VALID_WORDS.add("PANEL");VALID_WORDS.add("PANIC");VALID_WORDS.add("PAPER");VALID_WORDS.add("PARTY");VALID_WORDS.add("PASTA");VALID_WORDS.add("PATCH");VALID_WORDS.add("PAUSE");VALID_WORDS.add("PENNY");
+VALID_WORDS.add("PHONE");VALID_WORDS.add("PHOTO");VALID_WORDS.add("PIANO");VALID_WORDS.add("PIECE");VALID_WORDS.add("PITCH");VALID_WORDS.add("PIXEL");VALID_WORDS.add("PIZZA");VALID_WORDS.add("PLUCK");VALID_WORDS.add("PLUMB");VALID_WORDS.add("PLUME");VALID_WORDS.add("PLUMP");VALID_WORDS.add("PLUNGE");
+VALID_WORDS.add("POINT");VALID_WORDS.add("PORCH");VALID_WORDS.add("POUND");VALID_WORDS.add("PSALM");VALID_WORDS.add("PURSE");VALID_WORDS.add("QUEEN");VALID_WORDS.add("QUIRK");VALID_WORDS.add("REACT");VALID_WORDS.add("REPLY");VALID_WORDS.add("RESIN");VALID_WORDS.add("RIGHT");VALID_WORDS.add("RIGID");
+VALID_WORDS.add("ROBIN");VALID_WORDS.add("ROBOT");VALID_WORDS.add("ROUTE");VALID_WORDS.add("RURAL");VALID_WORDS.add("SALAD");VALID_WORDS.add("SAVVY");VALID_WORDS.add("SCARE");VALID_WORDS.add("SENSE");VALID_WORDS.add("SETUP");VALID_WORDS.add("SHEER");VALID_WORDS.add("SHELL");VALID_WORDS.add("SHIRE");
+VALID_WORDS.add("SHIRT");VALID_WORDS.add("SHOCK");VALID_WORDS.add("SHOUT");VALID_WORDS.add("SLASH");VALID_WORDS.add("SLEEP");VALID_WORDS.add("SLICE");VALID_WORDS.add("SONIC");VALID_WORDS.add("SPARE");VALID_WORDS.add("SPENT");VALID_WORDS.add("STAIN");VALID_WORDS.add("STAIR");VALID_WORDS.add("STALL");
+VALID_WORDS.add("STAMP");VALID_WORDS.add("STEAL");VALID_WORDS.add("STOOD");VALID_WORDS.add("STUCK");VALID_WORDS.add("STUFF");VALID_WORDS.add("SUGAR");VALID_WORDS.add("SWEAT");VALID_WORDS.add("SWEPT");VALID_WORDS.add("TABLE");VALID_WORDS.add("TEACH");VALID_WORDS.add("TEETH");VALID_WORDS.add("TEMPO");
+VALID_WORDS.add("THANK");VALID_WORDS.add("THEME");VALID_WORDS.add("THIEF");VALID_WORDS.add("THUMB");VALID_WORDS.add("TOKEN");VALID_WORDS.add("TRACE");VALID_WORDS.add("TRUMP");VALID_WORDS.add("TUMOR");VALID_WORDS.add("UNCLE");VALID_WORDS.add("UNDER");VALID_WORDS.add("UNFED");VALID_WORDS.add("UNFIT");
+VALID_WORDS.add("UNITE");VALID_WORDS.add("VALVE");VALID_WORDS.add("VENUE");VALID_WORDS.add("VIDEO");VALID_WORDS.add("VINYL");VALID_WORDS.add("WEAVE");VALID_WORDS.add("WHEAT");VALID_WORDS.add("WHEEL");VALID_WORDS.add("WOMAN");VALID_WORDS.add("WOUND");VALID_WORDS.add("WRATH");VALID_WORDS.add("WRIST");
+VALID_WORDS.add("WROTE");VALID_WORDS.add("YACHT");
+
+// Final missing common words
+VALID_WORDS.add("CRATE");VALID_WORDS.add("LATTE");VALID_WORDS.add("MOCHA");VALID_WORDS.add("QUITE");VALID_WORDS.add("SMILE");VALID_WORDS.add("STEAK");VALID_WORDS.add("SUSHI");VALID_WORDS.add("THEIR");
+VALID_WORDS.add("TOAST");VALID_WORDS.add("ROAST");VALID_WORDS.add("FEAST");VALID_WORDS.add("SALSA");VALID_WORDS.add("JUICE");VALID_WORDS.add("SWEET");VALID_WORDS.add("TASTE");VALID_WORDS.add("FRESH");
+
+// ─────────────────────────────────────────
+// LOAD EXTERNAL WORD LIST (words.txt)
+// ─────────────────────────────────────────
+async function loadWordList() {
+  try {
+    const res = await fetch('words.txt?v=' + Date.now());
+    if (!res.ok) throw new Error('fetch failed');
+    const text = await res.text();
+    const externalWords = text.split(/\r?\n/).map(w => w.trim().toUpperCase()).filter(w => /^[A-Z]{5}$/.test(w));
+    externalWords.forEach(w => VALID_WORDS.add(w));
+    console.log('Loaded ' + externalWords.length + ' words from words.txt (total: ' + VALID_WORDS.size + ')');
+  } catch(e) {
+    console.log('words.txt not available, using embedded list (' + VALID_WORDS.size + ' words)');
+  }
+}
+
+
+// ─────────────────────────────────────────
 // PUZZLE SCHEDULE — loaded from puzzles.json
 // ─────────────────────────────────────────
 let PUZZLE_SCHEDULE = [];
@@ -2423,7 +2466,7 @@ function init() {
   loadFirebaseUrl();
   buildBoard();
   buildKeyboard();
-  loadWord();
+  loadWordList().then(() => loadWord());
   document.addEventListener('keydown', handleKeyDown);
 }
 
@@ -2929,11 +2972,6 @@ function closeHelp() { document.getElementById('help-overlay').classList.remove(
 // ─────────────────────────────────────────
 function closeEndOverlay() {
   document.getElementById('end-overlay').classList.remove('show');
-  // Reset for new game
-  currentRow = 0; currentCol = 0; currentGuess = [];
-  gameOver = false; keyStates = {}; guesses = [];
-  buildBoard(); buildKeyboard();
-  loadWord();
 }
 
 // ─────────────────────────────────────────
