@@ -897,11 +897,6 @@
   .lb-score.won  { color: var(--correct); }
   .lb-score.lost { color: var(--absent); }
 
-  .lb-grid {
-    font-size: 0.7rem;
-    line-height: 1.4;
-    letter-spacing: 1px;
-  }
   .lb-time {
     font-size: 0.72rem;
     color: #bbb;
@@ -919,6 +914,36 @@
     padding: 32px 0;
     color: #bbb;
     font-size: 0.85rem;
+  }
+
+  /* Leaderboard tabs */
+  .lb-tabs {
+    display: flex;
+    gap: 0;
+    margin: 8px 0 4px;
+    border-bottom: 2px solid #e8ecff;
+  }
+  .lb-tab {
+    flex: 1;
+    padding: 8px 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #aab;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: -2px;
+  }
+  .lb-tab:hover { color: var(--pepsi-blue); }
+  .lb-tab.active {
+    color: var(--pepsi-blue);
+    border-bottom-color: var(--pepsi-blue);
   }
 
   .lb-footer {
@@ -2989,7 +3014,7 @@ init();
 // 3. Copy your database URL (looks like https://YOUR-PROJECT-default-rtdb.firebaseio.com)
 // 4. Paste it below as FIREBASE_URL  (keep the trailing slash)
 //
-const FIREBASE_URL = 'https://YOUR-PROJECT-default-rtdb.firebaseio.com/';
+const FIREBASE_URL = 'https://pepsi-wordld-default-rtdb.firebaseio.com/';
 //
 // ─────────────────────────────────────────
 
@@ -3087,12 +3112,10 @@ function renderLeaderboard(scores) {
       : '<span class="lb-rank">' + (i+1) + '</span>';
     const scoreClass = s.won ? 'won' : 'lost';
     const timeAgo = formatTimeAgo(s.ts);
-    const gridLines = s.grid.split('\n').join('<br>');
     return '<tr class="' + (isMe ? 'me' : '') + '">' +
       '<td class="lb-rank">' + rank + '</td>' +
       '<td class="lb-name-cell">' + escapeHtml(s.name) + (isMe ? ' <span style="font-size:0.7rem;color:var(--pepsi-blue)">YOU</span>' : '') + '</td>' +
       '<td class="lb-score ' + scoreClass + '">' + s.displayScore + '</td>' +
-      '<td class="lb-grid">' + gridLines + '</td>' +
       '<td class="lb-time">' + timeAgo + '</td>' +
     '</tr>';
   }).join('');
@@ -3103,7 +3126,6 @@ function renderLeaderboard(scores) {
       '<th class="center">#</th>' +
       '<th>Player</th>' +
       '<th class="center">Score</th>' +
-      '<th>Grid</th>' +
       '<th>When</th>' +
     '</tr></thead>' +
     '<tbody>' + rows + '</tbody>' +
@@ -3113,6 +3135,114 @@ function renderLeaderboard(scores) {
   if (myLeaderboardEntry) {
     const meRow = content.querySelector('tr.me');
     if (meRow) setTimeout(() => meRow.scrollIntoView({ block: 'center', behavior: 'smooth' }), 200);
+  }
+}
+
+function renderOverallLeaderboard(allScores) {
+  const content = document.getElementById('lb-content');
+  const sub = document.getElementById('lb-sub');
+
+  if (!allScores || Object.keys(allScores).length === 0) {
+    content.innerHTML = '<div class="lb-empty">No scores yet across any puzzle.</div>';
+    sub.textContent = 'No scores yet';
+    return;
+  }
+
+  // Aggregate by player name
+  const players = {};
+  for (const [puzzleKey, entries] of Object.entries(allScores)) {
+    if (!entries) continue;
+    const list = Array.isArray(entries) ? entries : Object.values(entries);
+    for (const s of list) {
+      if (!s || !s.name) continue;
+      const key = s.name.toLowerCase();
+      if (!players[key]) {
+        players[key] = { name: s.name, played: 0, wins: 0, totalGuesses: 0, bestScore: 7 };
+      }
+      players[key].played++;
+      if (s.won) {
+        players[key].wins++;
+        players[key].totalGuesses += s.guesses;
+        if (s.guesses < players[key].bestScore) players[key].bestScore = s.guesses;
+      } else {
+        players[key].totalGuesses += 7;
+      }
+    }
+  }
+
+  // Sort: most wins first, then best average
+  const sorted = Object.values(players).sort((a, b) => {
+    if (b.wins !== a.wins) return b.wins - a.wins;
+    const avgA = a.played ? a.totalGuesses / a.played : 7;
+    const avgB = b.played ? b.totalGuesses / b.played : 7;
+    return avgA - avgB;
+  });
+
+  const totalPlayers = sorted.length;
+  const totalPuzzles = Object.keys(allScores).length;
+  sub.textContent = totalPlayers + ' player' + (totalPlayers === 1 ? '' : 's') + ' • ' + totalPuzzles + ' puzzle' + (totalPuzzles === 1 ? '' : 's');
+
+  const rankIcons = ['🥇','🥈','🥉'];
+  const rankClass = ['gold','silver','bronze'];
+
+  const savedName = (sessionStorage.getItem('pepsiwordle_playername') || '').toLowerCase();
+
+  let rows = sorted.map((p, i) => {
+    const isMe = savedName && p.name.toLowerCase() === savedName;
+    const rank = i < 3
+      ? '<span class="lb-rank ' + rankClass[i] + '">' + rankIcons[i] + '</span>'
+      : '<span class="lb-rank">' + (i+1) + '</span>';
+    const avg = p.played ? (p.totalGuesses / p.played).toFixed(1) : '—';
+    const winPct = p.played ? Math.round(p.wins / p.played * 100) + '%' : '—';
+    return '<tr class="' + (isMe ? 'me' : '') + '">' +
+      '<td class="lb-rank">' + rank + '</td>' +
+      '<td class="lb-name-cell">' + escapeHtml(p.name) + (isMe ? ' <span style="font-size:0.7rem;color:var(--pepsi-blue)">YOU</span>' : '') + '</td>' +
+      '<td style="text-align:center;font-weight:700;color:var(--correct)">' + p.wins + '/' + p.played + '</td>' +
+      '<td style="text-align:center;font-size:0.85rem;">' + avg + '</td>' +
+      '<td style="text-align:center;font-size:0.85rem;color:#888;">' + winPct + '</td>' +
+    '</tr>';
+  }).join('');
+
+  content.innerHTML =
+    '<table class="lb-table">' +
+    '<thead><tr>' +
+      '<th class="center">#</th>' +
+      '<th>Player</th>' +
+      '<th class="center">Solved</th>' +
+      '<th class="center">Avg</th>' +
+      '<th class="center">Win %</th>' +
+    '</tr></thead>' +
+    '<tbody>' + rows + '</tbody>' +
+    '</table>';
+}
+
+async function loadAllScores() {
+  if (!isFirebaseConfigured()) return {};
+  try {
+    const url = (window._firebaseUrl || FIREBASE_URL) + 'scores.json';
+    const res = await fetch(url);
+    if (!res.ok) return {};
+    const data = await res.json();
+    return data || {};
+  } catch(e) {
+    return {};
+  }
+}
+
+let currentLbTab = 'puzzle';
+
+function switchLbTab(tab) {
+  currentLbTab = tab;
+  document.getElementById('lb-tab-puzzle').classList.toggle('active', tab === 'puzzle');
+  document.getElementById('lb-tab-overall').classList.toggle('active', tab === 'overall');
+  document.getElementById('lb-puzzle-badge').textContent = tab === 'puzzle' ? 'Puzzle #' + puzzleNumber : 'All Puzzles';
+  document.getElementById('lb-content').innerHTML = '<div class="lb-loading">Loading scores…</div>';
+  document.getElementById('lb-sub').textContent = 'Loading…';
+
+  if (tab === 'puzzle') {
+    loadScores().then(scores => renderLeaderboard(scores));
+  } else {
+    loadAllScores().then(allScores => renderOverallLeaderboard(allScores));
   }
 }
 
@@ -3129,11 +3259,9 @@ function formatTimeAgo(ts) {
 }
 
 async function showLeaderboard() {
-  document.getElementById('lb-puzzle-badge').textContent = 'Puzzle #' + puzzleNumber;
-  document.getElementById('lb-content').innerHTML = '<div class="lb-loading">Loading scores…</div>';
   document.getElementById('leaderboard-overlay').classList.add('show');
-  const scores = await loadScores();
-  renderLeaderboard(scores);
+  // Reset to puzzle tab
+  switchLbTab('puzzle');
 }
 
 function closeLeaderboard() {
@@ -3302,6 +3430,10 @@ function closeHintOnOutsideClick(e) {
     <div class="lb-header">
       <div class="lb-title">🏆 Leaderboard</div>
       <div class="lb-puzzle-badge" id="lb-puzzle-badge">Puzzle #1</div>
+    </div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" id="lb-tab-puzzle" onclick="switchLbTab('puzzle')">This Puzzle</button>
+      <button class="lb-tab" id="lb-tab-overall" onclick="switchLbTab('overall')">Overall</button>
     </div>
     <div class="lb-sub" id="lb-sub">Loading scores…</div>
     <div class="lb-scroll">
