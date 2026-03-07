@@ -2264,7 +2264,6 @@
     <div class="end-word" id="end-word"></div>
     <button class="share-btn" onclick="shareResult()">📤 Share Result</button>
     <button class="share-btn" style="background:var(--correct)" onclick="closeEndOverlay();showLeaderboard()">🏆 View Leaderboard</button>
-    <button class="share-btn red" onclick="closeEndOverlay()">Play Again</button>
   </div>
 </div>
 
@@ -2455,6 +2454,7 @@ async function loadWord() {
         currentHint = scheduled ? scheduled.hint : '';
         currentPartial = scheduled ? scheduled.partial : '';
         updatePuzzleDisplay();
+        restoreGameState();
         return;
       }
     } catch(e) {}
@@ -2467,6 +2467,7 @@ async function loadWord() {
   currentPartial = todayPuzzle.partial;
   if(VALID_WORDS) VALID_WORDS.add(targetWord);
   updatePuzzleDisplay();
+  restoreGameState();
 }
 
 function updatePuzzleDisplay() {
@@ -2584,6 +2585,7 @@ function submitGuess() {
 
   const result = evaluateGuess(guess);
   guesses.push({ guess, result });
+  saveGameState();
   revealTiles(result, guess, () => {
     updateKeyboard(guess, result);
     const won = result.every(r => r === 'correct');
@@ -2915,6 +2917,7 @@ function applyAdminWord() {
     alert('Please enter a valid puzzle number (1 or higher).');
     return;
   }
+  clearGameState();
   targetWord   = word;
   puzzleNumber = num;
   const sp = PUZZLE_SCHEDULE.find(p => p.num === num);
@@ -3159,10 +3162,13 @@ async function loadPuzzleLeaderboard() {
     const solved = entries.filter(e => e.guesses <= 6).length;
     meta.textContent = `${entries.length} player${entries.length !== 1 ? 's' : ''} · ${solved} solved`;
     const myName = localStorage.getItem('pepsi_player_name') || '';
+    const lbShareBtn = document.getElementById('lb-share-btn');
     if (!entries.length) {
       tbody.innerHTML = '<tr><td colspan="4" class="lb-empty">No scores yet — be the first! 🎯</td></tr>';
+      if (lbShareBtn) lbShareBtn.style.display = 'none';
       return;
     }
+    if (lbShareBtn) lbShareBtn.style.display = '';
     tbody.innerHTML = entries.slice(0, 50).map((e, i) => {
       const rank = i + 1;
       const isMe = myName && e.name === myName;
@@ -3377,6 +3383,7 @@ function applyAdminWord() {
     alert('Please enter a valid puzzle number (1 or higher).');
     return;
   }
+  clearGameState();
   targetWord   = word;
   puzzleNumber = num;
   const sp = PUZZLE_SCHEDULE.find(p => p.num === num);
@@ -3716,6 +3723,90 @@ function closeHintOnOutsideClick(e) {
     btn.classList.remove('active');
   }
 }
+
+// ─── Game state persistence (per puzzle) ──────────────────────────────────
+function saveGameState() {
+  const state = {
+    puzzleNumber,
+    targetWord,
+    guesses,          // array of {guess, result}
+    gameOver,
+    won: guesses.length > 0 && guesses[guesses.length-1].result.every(r => r === 'correct')
+  };
+  localStorage.setItem('pepsi_game_state', JSON.stringify(state));
+}
+
+function clearGameState() {
+  localStorage.removeItem('pepsi_game_state');
+}
+
+function restoreGameState() {
+  // Returns true if state was restored
+  try {
+    const raw = localStorage.getItem('pepsi_game_state');
+    if (!raw) return false;
+    const state = JSON.parse(raw);
+    if (state.puzzleNumber !== puzzleNumber) return false;
+
+    // Replay the saved guesses onto the board
+    guesses = state.guesses || [];
+    gameOver = state.gameOver || false;
+
+    guesses.forEach((entry, rowIndex) => {
+      entry.guess.split('').forEach((letter, col) => {
+        const tile = board[rowIndex][col];
+        tile.textContent = letter;
+        tile.classList.add('filled');
+      });
+      // Reveal tiles instantly (no animation on restore)
+      entry.guess.split('').forEach((letter, col) => {
+        const tile = board[rowIndex][col];
+        const color = entry.result[col] === 'correct'  ? 'var(--correct)'  :
+                      entry.result[col] === 'present'  ? 'var(--present)'  :
+                                                          'var(--absent)';
+        tile.style.background = color;
+        tile.style.color = 'white';
+        tile.style.borderColor = color;
+        tile.classList.add('revealed');
+      });
+      // Update keyboard colours
+      entry.guess.split('').forEach((letter, col) => {
+        const state_col = entry.result[col];
+        const prev = keyStates[letter];
+        if (state_col === 'correct' ||
+           (state_col === 'present' && prev !== 'correct') ||
+           (!prev)) {
+          keyStates[letter] = state_col;
+        }
+      });
+    });
+
+    updateKeyboard();
+    currentRow = guesses.length;
+    currentCol = 0;
+    currentGuess = [];
+
+    if (gameOver) {
+      const won = state.won;
+      // Re-show end overlay after a short delay (no confetti/bounce)
+      setTimeout(() => {
+        document.getElementById('end-emoji-img').src = PEPSI_CAN_SRC;
+        document.getElementById('end-emoji-img').style.filter = won ? 'none' : 'grayscale(60%)';
+        const msg = won
+          ? (WIN_MSGS[Math.min(guesses.length - 1, WIN_MSGS.length - 1)] + ' (already solved)')
+          : 'SO CLOSE! (already played)';
+        document.getElementById('end-title').textContent = msg;
+        document.getElementById('end-word').innerHTML =
+          `The word was <strong style="color:var(--pepsi-blue)">${targetWord}</strong>`;
+        document.getElementById('end-overlay').classList.add('show');
+      }, 300);
+    }
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+// ──────────────────────────────────────────────────────────────────────────
 </script>
 
 <!-- NAME PROMPT -->
@@ -3782,7 +3873,7 @@ function closeHintOnOutsideClick(e) {
     </div>
     <div class="lb-footer">
       <button class="lb-footer-btn outline" onclick="closeLeaderboard()">Close</button>
-      <button class="lb-footer-btn primary" onclick="shareResult()">🔗 Share</button>
+      <button class="lb-footer-btn primary" id="lb-share-btn" onclick="shareResult()" style="display:none">🔗 Share</button>
     </div>
   </div>
 </div>
