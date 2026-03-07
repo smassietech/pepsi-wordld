@@ -34,12 +34,13 @@
 
   body {
     background: linear-gradient(160deg, #000000 0%, #0E0E96 45%, #0025FF 100%);
-    min-height: 100vh;
+    min-height: 100svh;
+    height: 100svh;
     font-family: 'Barlow', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
   }
 
@@ -187,24 +188,26 @@
 
   /* --- GAME BOARD --- */
   #board-container {
+    flex: 1;
+    min-height: 0;
     width: 100%;
     max-width: 360px;
-    padding: 12px 0 8px;
-    position: relative;
-    z-index: 10;
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 4px 0;
+    position: relative;
+    z-index: 10;
   }
 
   #board {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 0 16px;
-    align-items: center;
+    padding: 0 12px;
     width: 100%;
+    max-width: 340px;
+    align-items: center;
   }
 
   .row {
@@ -212,14 +215,12 @@
     grid-template-columns: repeat(5, 1fr);
     gap: 5px;
     width: 100%;
-    max-width: 330px;
+    max-width: 320px;
   }
 
   .tile {
     width: 100%;
     aspect-ratio: 1 / 1;
-    min-height: 52px;
-    max-height: 68px;
     border: 2px solid var(--tile-border);
     background: rgba(255,255,255,0.97);
     border-radius: 6px;
@@ -228,7 +229,7 @@
     justify-content: center;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
-    font-size: 2rem;
+    font-size: clamp(1.3rem, 6vw, 2rem);
     color: var(--text-dark);
     transition: border-color 0.1s;
     position: relative;
@@ -285,24 +286,29 @@
 
   /* --- KEYBOARD --- */
   #keyboard {
+    flex-shrink: 0;
     width: 100%;
     max-width: 500px;
-    padding: 8px 12px 24px;
+    padding: 6px 8px max(12px, env(safe-area-inset-bottom));
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
     position: relative;
     z-index: 10;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .kb-row {
     display: flex;
     justify-content: center;
-    gap: 4px;
-    margin-bottom: 4px;
+    gap: clamp(3px, 0.8vw, 5px);
+    margin-bottom: clamp(3px, 0.8vw, 5px);
     padding: 0 2px;
     width: 100%;
   }
 
   .key {
-    height: 58px; /* overridden by responsive CSS below */
+    height: clamp(42px, 7svh, 60px);
     min-width: 0;
     flex: 1;
     max-width: 43px;
@@ -313,16 +319,13 @@
     color: var(--text-dark);
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
+    font-size: clamp(0.7rem, 2.8vw, 0.95rem);
     cursor: pointer;
-    transition: transform 0.08s, background 0.3s, color 0.3s;
+    transition: background 0.15s;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1;
-    max-width: 42px;
-    user-select: none;
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -954,98 +957,106 @@
     -webkit-user-select: none;
   }
 
-  /* ═══════════════════════════════════════════════
-     FLUID RESPONSIVE LAYOUT
-     Works from iPhone SE (375×667) to
-     iPhone 16 Pro Max (430×956) to desktop
-  ═══════════════════════════════════════════════ */
 
-  /* Full-height flex column, no overflow */
-  html, body {
-    height: 100%;
-    height: 100dvh;
-    overflow: hidden;
-  }
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* Header shrinks on short screens */
-  header {
-    flex-shrink: 0;
-    padding: clamp(6px, 2dvh, 18px) 16px clamp(4px, 1.5dvh, 12px);
-  }
-  .game-title {
-    font-size: clamp(1.8rem, 7vw, 3.2rem);
-  }
-  .game-sub {
-    font-size: clamp(0.55rem, 2vw, 0.75rem);
-  }
-  .stat-num {
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
-  }
-  .stat-label {
-    font-size: clamp(0.55rem, 1.8vw, 0.65rem);
-  }
-  .icon-btn {
-    width:  clamp(32px, 8vw, 42px);
-    height: clamp(32px, 8vw, 42px);
-    font-size: clamp(0.9rem, 3.5vw, 1.2rem);
-  }
-
-  /* Board takes remaining space between header and keyboard */
-  #board-container {
-    flex: 1;
-    min-height: 0;
-    display: flex;
+  /* Name prompt overlay */
+  #name-prompt {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,10,30,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 600;
     align-items: center;
     justify-content: center;
-    padding: clamp(4px, 1dvh, 12px) 0;
-    width: 100%;
+    padding: 20px;
   }
-  #board {
-    /* Size board to fit within the available height */
-    height: 100%;
-    max-height: min(55dvh, calc(5 * (10vw + 6px) + 30px));
-    width: 100%;
-    max-width: min(330px, 90vw);
-    gap: clamp(3px, 0.8vw, 6px);
-  }
-  .row {
-    gap: clamp(3px, 0.8vw, 6px);
-  }
-  .tile {
-    font-size: clamp(1.2rem, 5.5vw, 2rem);
-    border-radius: clamp(4px, 1.2vw, 8px);
-    min-height: unset;
-    max-height: unset;
-  }
+  #name-prompt.show { display: flex; }
 
-  /* Keyboard fills its natural space */
-  #keyboard {
-    flex-shrink: 0;
-    padding: clamp(4px, 1dvh, 8px) max(8px, env(safe-area-inset-right)) max(clamp(8px, 2dvh, 20px), env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
-    width: 100%;
+  /* Responsive breakpoints */
+  @media (max-height: 700px) {
+    header { padding: 6px 16px 4px; }
+    .game-title { font-size: 2rem; }
+    .game-subtitle { display: none; }
+    .wod-badge { margin: 4px 0; }
+    .stats-bar { gap: 12px; margin: 4px 0; }
+    .stat-num { font-size: 1.1rem; }
+    .header-actions { margin-top: 4px; }
+    .icon-btn { width: 34px; height: 34px; font-size: 0.9rem; }
+    #board { gap: 4px; }
+    .row { gap: 4px; }
+    .key { height: 40px; }
+    .kb-row { gap: 3px; margin-bottom: 3px; }
   }
-  .kb-row {
-    gap: clamp(3px, 0.8vw, 5px);
-    margin-bottom: clamp(3px, 0.8vw, 5px);
+  @media (max-width: 360px) {
+    .key { font-size: 0.68rem; }
+    .tile { font-size: 1.2rem; }
+    .icon-btn { width: 32px; height: 32px; }
   }
-  .key {
-    height: clamp(42px, 7.5dvh, 62px);
-    font-size: clamp(0.7rem, 2.8vw, 0.95rem);
-    border-radius: clamp(4px, 1vw, 6px);
-  }
-  .key.wide {
-    font-size: clamp(0.6rem, 2.3vw, 0.78rem);
-  }
+  /* Kill tap delay everywhere */
+  * { -webkit-tap-highlight-color: transparent; }
+  button { touch-action: manipulation; }
 
-  /* Puzzle badge pill */
-  .puzzle-pill {
-    font-size: clamp(0.65rem, 2.2vw, 0.8rem);
-    padding: clamp(4px, 1vw, 7px) clamp(10px, 3vw, 18px);
+  /* Hint popup */
+  #hint-popup {
+    display: none;
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10,10,40,0.97);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 14px;
+    padding: 14px 20px;
+    max-width: min(340px, 88vw);
+    width: max-content;
+    z-index: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    text-align: center;
+    animation: hintFadeIn 0.15s ease;
+  }
+  #hint-popup.show { display: block; }
+  @keyframes hintFadeIn {
+    from { opacity:0; transform: translateX(-50%) translateY(-6px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+  }
+  #hint-popup .hint-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: #FFD700;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  #hint-popup .hint-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.4;
+  }
+  #hint-popup .hint-partial {
+    margin-top: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,200,60,0.85);
+    text-transform: uppercase;
+  }
+  #hint-btn.active { color: #FFD700; }
+  #hint-btn { display: none; }
+  #hint-btn.unlocked {
+    display: inline-flex;
+    animation: hintUnlock 0.5s ease forwards, hintPulse 1.2s ease 0.5s 4;
+  }
+  @keyframes hintUnlock {
+    0%   { transform: scale(0.4) rotate(-20deg); opacity: 0; }
+    60%  { transform: scale(1.25) rotate(8deg);  opacity: 1; }
+    100% { transform: scale(1)   rotate(0deg);   opacity: 1; }
+  }
+  @keyframes hintPulse {
+    0%,100% { color: inherit;  filter: drop-shadow(0 0 0px #FFD700); }
+    50%     { color: #FFD700;  filter: drop-shadow(0 0 8px #FFD700); }
   }
 
 </style>
