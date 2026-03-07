@@ -1,0 +1,590 @@
+[
+  {
+    "num": 1,
+    "date": "2026-03-07",
+    "word": "PEPSI",
+    "hint": "The flagship cola brand — served ice cold 🥤",
+    "partial": ""
+  },
+  {
+    "num": 2,
+    "date": "2026-03-08",
+    "word": "GATOR",
+    "hint": "Sports drink brand",
+    "partial": "Partial: short for Gatorade"
+  },
+  {
+    "num": 3,
+    "date": "2026-03-09",
+    "word": "BRISK",
+    "hint": "Iced tea brand sold globally 🍵",
+    "partial": ""
+  },
+  {
+    "num": 4,
+    "date": "2026-03-10",
+    "word": "SEVEN",
+    "hint": "Lemon-lime soda. Also a lucky number 🍋",
+    "partial": "Partial: short for 7UP"
+  },
+  {
+    "num": 5,
+    "date": "2026-03-11",
+    "word": "STING",
+    "hint": "Energy drink huge in SE Asia & India ⚡",
+    "partial": ""
+  },
+  {
+    "num": 6,
+    "date": "2026-03-12",
+    "word": "NAKED",
+    "hint": "Premium cold-pressed juice brand 🥝",
+    "partial": "Partial: short for Naked Juice"
+  },
+  {
+    "num": 7,
+    "date": "2026-03-13",
+    "word": "TROPI",
+    "hint": "Orange juice brand enjoyed at breakfast 🍊",
+    "partial": "Partial: short for Tropicana"
+  },
+  {
+    "num": 8,
+    "date": "2026-03-14",
+    "word": "QUAKE",
+    "hint": "Oat & grain snack brand. Think rice cakes 🌾",
+    "partial": "Partial: short for Quaker"
+  },
+  {
+    "num": 9,
+    "date": "2026-03-15",
+    "word": "FRITO",
+    "hint": "Corn chip brand, popular in the US & Mexico 🌽",
+    "partial": "Partial: short for Fritos"
+  },
+  {
+    "num": 10,
+    "date": "2026-03-16",
+    "word": "TOSTI",
+    "hint": "Round tortilla chip — great with salsa 🥑",
+    "partial": "Partial: short for Tostitos"
+  },
+  {
+    "num": 11,
+    "date": "2026-03-17",
+    "word": "SIMBA",
+    "hint": "Iconic potato crisp brand from South Africa 🦁",
+    "partial": ""
+  },
+  {
+    "num": 12,
+    "date": "2026-03-18",
+    "word": "CHEEZ",
+    "hint": "Puffed cheese snack — orange fingers guaranteed 🧀",
+    "partial": "Partial: short for Cheetos"
+  },
+  {
+    "num": 13,
+    "date": "2026-03-19",
+    "word": "STACY",
+    "hint": "Pita chip brand — a healthier snack option 🫓",
+    "partial": "Partial: short for Stacy's"
+  },
+  {
+    "num": 14,
+    "date": "2026-03-20",
+    "word": "SABRA",
+    "hint": "Hummus & dip brand, popular in North America 🫘",
+    "partial": ""
+  },
+  {
+    "num": 15,
+    "date": "2026-03-21",
+    "word": "MUNCH",
+    "hint": "Monster ___. Corn puff snack, a UK lunchbox staple 👾",
+    "partial": "Partial: Monster Munch"
+  },
+  {
+    "num": 16,
+    "date": "2026-03-22",
+    "word": "QUAVE",
+    "hint": "Light, puffy cheese snack loved by UK kids 🧀",
+    "partial": "Partial: short for Quavers"
+  },
+  {
+    "num": 17,
+    "date": "2026-03-23",
+    "word": "SMITH",
+    "hint": "British crisp brand with a heritage since 1920 🇬🇧",
+    "partial": "Partial: Smith's Crisps"
+  },
+  {
+    "num": 18,
+    "date": "2026-03-24",
+    "word": "SKIPS",
+    "hint": "Prawn cocktail flavoured corn puffs — a UK classic 🍤",
+    "partial": ""
+  },
+  {
+    "num": 19,
+    "date": "2026-03-25",
+    "word": "PRAWN",
+    "hint": "Classic UK crisp flavour — cocktail style 🦐",
+    "partial": ""
+  },
+  {
+    "num": 20,
+    "date": "2026-03-26",
+    "word": "ONION",
+    "hint": "Pickled ___ rings — sharp, tangy UK crisp flavour 🧅",
+    "partial": ""
+  },
+  {
+    "num": 21,
+    "date": "2026-03-27",
+    "word": "KEBAB",
+    "hint": "Doner ___ flavour crisps — popular in UK & MENA 🥙",
+    "partial": ""
+  },
+  {
+    "num": 22,
+    "date": "2026-03-28",
+    "word": "TIKKA",
+    "hint": "Walkers crisp flavour inspired by Indian cuisine 🇮🇳",
+    "partial": ""
+  },
+  {
+    "num": 23,
+    "date": "2026-03-29",
+    "word": "NACHO",
+    "hint": "___ Cheese — Doritos' most iconic flavour 🌮",
+    "partial": ""
+  },
+  {
+    "num": 24,
+    "date": "2026-03-30",
+    "word": "RANCH",
+    "hint": "Creamy herb dip & crisp flavour, huge in the US 🌿",
+    "partial": ""
+  },
+  {
+    "num": 25,
+    "date": "2026-03-31",
+    "word": "BACON",
+    "hint": "Smoky pork crisp flavour — a perennial favourite 🥓",
+    "partial": ""
+  },
+  {
+    "num": 26,
+    "date": "2026-04-01",
+    "word": "CHILI",
+    "hint": "___ Heat Wave — Doritos' spicy variant 🌶️",
+    "partial": ""
+  },
+  {
+    "num": 27,
+    "date": "2026-04-02",
+    "word": "SRIRA",
+    "hint": "Hot chili sauce flavour — SE Asian inspired 🌶️",
+    "partial": "Partial: short for Sriracha"
+  },
+  {
+    "num": 28,
+    "date": "2026-04-03",
+    "word": "UMAMI",
+    "hint": "The fifth taste — savoury depth in many Asian snacks 🍜",
+    "partial": ""
+  },
+  {
+    "num": 29,
+    "date": "2026-04-04",
+    "word": "MANGO",
+    "hint": "Tropical fruit flavour — popular in Asia & Latin America 🥭",
+    "partial": ""
+  },
+  {
+    "num": 30,
+    "date": "2026-04-05",
+    "word": "GUAVA",
+    "hint": "Sweet tropical fruit — Latin America & India 🍈",
+    "partial": ""
+  },
+  {
+    "num": 31,
+    "date": "2026-04-06",
+    "word": "LEMON",
+    "hint": "Sharp citrus flavour found in drinks & snacks 🍋",
+    "partial": ""
+  },
+  {
+    "num": 32,
+    "date": "2026-04-07",
+    "word": "PEACH",
+    "hint": "Sweet stone fruit — popular iced tea flavour 🍑",
+    "partial": ""
+  },
+  {
+    "num": 33,
+    "date": "2026-04-08",
+    "word": "GRAPE",
+    "hint": "Classic soda and juice flavour 🍇",
+    "partial": ""
+  },
+  {
+    "num": 34,
+    "date": "2026-04-09",
+    "word": "TAMAR",
+    "hint": "Tangy pod used in Indian & MENA drinks and snacks 🌿",
+    "partial": "Partial: short for Tamarind"
+  },
+  {
+    "num": 35,
+    "date": "2026-04-10",
+    "word": "BERRY",
+    "hint": "Mixed fruit flavour across juices and sports drinks 🍓",
+    "partial": ""
+  },
+  {
+    "num": 36,
+    "date": "2026-04-11",
+    "word": "CRISP",
+    "hint": "Thin, crunchy, salted potato snack 🥔",
+    "partial": ""
+  },
+  {
+    "num": 37,
+    "date": "2026-04-12",
+    "word": "FIZZY",
+    "hint": "Carbonated — what makes cola so refreshing 🫧",
+    "partial": ""
+  },
+  {
+    "num": 38,
+    "date": "2026-04-13",
+    "word": "ZESTY",
+    "hint": "Bright, citrusy, tangy flavour profile 🍊",
+    "partial": ""
+  },
+  {
+    "num": 39,
+    "date": "2026-04-14",
+    "word": "SALTY",
+    "hint": "Essential taste — found in every crisp ever made 🧂",
+    "partial": ""
+  },
+  {
+    "num": 40,
+    "date": "2026-04-15",
+    "word": "SWEET",
+    "hint": "Opposite of sour — key to many PepsiCo drinks 🍬",
+    "partial": ""
+  },
+  {
+    "num": 41,
+    "date": "2026-04-16",
+    "word": "SPICY",
+    "hint": "Turned up the heat — Flamin' Hot category 🔥",
+    "partial": ""
+  },
+  {
+    "num": 42,
+    "date": "2026-04-17",
+    "word": "SMOKY",
+    "hint": "BBQ and smoked flavour across global snack ranges",
+    "partial": ""
+  },
+  {
+    "num": 43,
+    "date": "2026-04-18",
+    "word": "CHIPS",
+    "hint": "Thin sliced fried potato snack. Crisp in the UK 🥔",
+    "partial": ""
+  },
+  {
+    "num": 44,
+    "date": "2026-04-19",
+    "word": "CURLS",
+    "hint": "Puffy corn snack in a spiral shape 🌀",
+    "partial": ""
+  },
+  {
+    "num": 45,
+    "date": "2026-04-20",
+    "word": "RINGS",
+    "hint": "Onion-shaped corn puff snack 🧅",
+    "partial": ""
+  },
+  {
+    "num": 46,
+    "date": "2026-04-21",
+    "word": "PUFFS",
+    "hint": "Air-popped or extruded snack format 💨",
+    "partial": ""
+  },
+  {
+    "num": 47,
+    "date": "2026-04-22",
+    "word": "BITES",
+    "hint": "Small, snackable format — perfect for sharing 🤏",
+    "partial": ""
+  },
+  {
+    "num": 48,
+    "date": "2026-04-23",
+    "word": "SNACK",
+    "hint": "The category PepsiCo dominates globally 🛒",
+    "partial": ""
+  },
+  {
+    "num": 49,
+    "date": "2026-04-24",
+    "word": "TRAIL",
+    "hint": "___ mix — a healthy on-the-go snack 🥾",
+    "partial": ""
+  },
+  {
+    "num": 50,
+    "date": "2026-04-25",
+    "word": "AUDIT",
+    "hint": "Independent review of financial records 📋",
+    "partial": ""
+  },
+  {
+    "num": 51,
+    "date": "2026-04-26",
+    "word": "YIELD",
+    "hint": "Return on investment — a key financial metric 📈",
+    "partial": ""
+  },
+  {
+    "num": 52,
+    "date": "2026-04-27",
+    "word": "ASSET",
+    "hint": "Something of value owned by a company 🏦",
+    "partial": ""
+  },
+  {
+    "num": 53,
+    "date": "2026-04-28",
+    "word": "CAPEX",
+    "hint": "Capital expenditure — spend on long-term assets 🏗️",
+    "partial": ""
+  },
+  {
+    "num": 54,
+    "date": "2026-04-29",
+    "word": "DEBIT",
+    "hint": "An entry recording money leaving an account 💸",
+    "partial": ""
+  },
+  {
+    "num": 55,
+    "date": "2026-04-30",
+    "word": "COSTS",
+    "hint": "Expenditures tracked in every P&L 📊",
+    "partial": ""
+  },
+  {
+    "num": 56,
+    "date": "2026-05-01",
+    "word": "SALES",
+    "hint": "Revenue from goods or services sold 💰",
+    "partial": ""
+  },
+  {
+    "num": 57,
+    "date": "2026-05-02",
+    "word": "GAINS",
+    "hint": "Profit above cost — the goal of every trade 📈",
+    "partial": ""
+  },
+  {
+    "num": 58,
+    "date": "2026-05-03",
+    "word": "TAXES",
+    "hint": "Mandatory financial contributions to government 🏛️",
+    "partial": ""
+  },
+  {
+    "num": 59,
+    "date": "2026-05-04",
+    "word": "BONDS",
+    "hint": "Fixed income debt instruments 📜",
+    "partial": ""
+  },
+  {
+    "num": 60,
+    "date": "2026-05-05",
+    "word": "STOCK",
+    "hint": "Equity shares in a publicly traded company 📈",
+    "partial": ""
+  },
+  {
+    "num": 61,
+    "date": "2026-05-06",
+    "word": "TRADE",
+    "hint": "Exchange of goods, services or financial instruments 🤝",
+    "partial": ""
+  },
+  {
+    "num": 62,
+    "date": "2026-05-07",
+    "word": "RATES",
+    "hint": "Interest or exchange rates — critical in global finance 💱",
+    "partial": ""
+  },
+  {
+    "num": 63,
+    "date": "2026-05-08",
+    "word": "GROSS",
+    "hint": "___ profit — revenue minus cost of goods sold 💵",
+    "partial": ""
+  },
+  {
+    "num": 64,
+    "date": "2026-05-09",
+    "word": "RATIO",
+    "hint": "Financial metric comparing two values — e.g. P/E 📐",
+    "partial": ""
+  },
+  {
+    "num": 65,
+    "date": "2026-05-10",
+    "word": "ENTRY",
+    "hint": "A line item in a journal or ledger 📒",
+    "partial": ""
+  },
+  {
+    "num": 66,
+    "date": "2026-05-11",
+    "word": "CLOSE",
+    "hint": "Period ___ — month-end or year-end process 📅",
+    "partial": ""
+  },
+  {
+    "num": 67,
+    "date": "2026-05-12",
+    "word": "REMIT",
+    "hint": "To send payment or transfer funds 💳",
+    "partial": ""
+  },
+  {
+    "num": 68,
+    "date": "2026-05-13",
+    "word": "BUDGE",
+    "hint": "Short for budget — the financial plan 📋",
+    "partial": "Partial: short for Budget"
+  },
+  {
+    "num": 69,
+    "date": "2026-05-14",
+    "word": "RECON",
+    "hint": "Reconciliation — matching records to statements 🔄",
+    "partial": "Partial: short for Reconciliation"
+  },
+  {
+    "num": 70,
+    "date": "2026-05-15",
+    "word": "EXCEL",
+    "hint": "The finance team's best friend 📊",
+    "partial": ""
+  },
+  {
+    "num": 71,
+    "date": "2026-05-16",
+    "word": "PIVOT",
+    "hint": "___ table — summarise data fast in Excel 🔄",
+    "partial": ""
+  },
+  {
+    "num": 72,
+    "date": "2026-05-17",
+    "word": "FLASH",
+    "hint": "___ report — quick snapshot of financial performance ⚡",
+    "partial": ""
+  },
+  {
+    "num": 73,
+    "date": "2026-05-18",
+    "word": "FOREX",
+    "hint": "Foreign exchange — currency trading market 💱",
+    "partial": ""
+  },
+  {
+    "num": 74,
+    "date": "2026-05-19",
+    "word": "HEDGE",
+    "hint": "Risk management strategy to offset potential losses 🛡️",
+    "partial": ""
+  },
+  {
+    "num": 75,
+    "date": "2026-05-20",
+    "word": "SCOPE",
+    "hint": "Defined boundaries of a project or audit 📏",
+    "partial": ""
+  },
+  {
+    "num": 76,
+    "date": "2026-05-21",
+    "word": "MICRO",
+    "hint": "___ economics — studying individual market behaviour 🔬",
+    "partial": ""
+  },
+  {
+    "num": 77,
+    "date": "2026-05-22",
+    "word": "MACRO",
+    "hint": "___ economics — big picture financial analysis 🌍",
+    "partial": ""
+  },
+  {
+    "num": 78,
+    "date": "2026-05-23",
+    "word": "WIRES",
+    "hint": "Bank ___ — electronic fund transfers 🏦",
+    "partial": ""
+  },
+  {
+    "num": 79,
+    "date": "2026-05-24",
+    "word": "DELTA",
+    "hint": "Greek letter for variance or change in finance Δ",
+    "partial": ""
+  },
+  {
+    "num": 80,
+    "date": "2026-05-25",
+    "word": "BENCH",
+    "hint": "___ mark — the standard to measure performance against 📏",
+    "partial": "Partial: short for Benchmark"
+  },
+  {
+    "num": 81,
+    "date": "2026-05-26",
+    "word": "QUERY",
+    "hint": "A question raised during audit or data review 🔍",
+    "partial": ""
+  },
+  {
+    "num": 82,
+    "date": "2026-05-27",
+    "word": "GRANT",
+    "hint": "Financial award or subsidy — often government-issued 🏛️",
+    "partial": ""
+  },
+  {
+    "num": 83,
+    "date": "2026-05-28",
+    "word": "FUNDS",
+    "hint": "Pools of money managed for investment or operations 💼",
+    "partial": ""
+  },
+  {
+    "num": 84,
+    "date": "2026-05-29",
+    "word": "SPEND",
+    "hint": "Total outlay — tracked closely in every budget 💸",
+    "partial": ""
+  }
+]
