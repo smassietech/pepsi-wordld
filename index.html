@@ -1075,6 +1075,162 @@
     text-align: center;
   }
 
+
+  /* Admin password overlay */
+  #admin-pw-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+  #admin-pw-overlay.show { display: flex; }
+  #admin-pw-box {
+    background: #fff;
+    border-radius: 18px;
+    padding: 32px 28px 24px;
+    width: min(320px, 88vw);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    text-align: center;
+  }
+  #admin-pw-box .pw-logo {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+  }
+  #admin-pw-box h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: #0025FF;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 6px;
+  }
+  #admin-pw-box p {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0 0 18px;
+  }
+  #admin-pw-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #admin-pw-input:focus { border-color: #0025FF; }
+  #admin-pw-input.error { border-color: #FF1400; animation: pwShake 0.3s ease; }
+  @keyframes pwShake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+  #admin-pw-error {
+    color: #FF1400;
+    font-size: 0.78rem;
+    font-weight: 600;
+    min-height: 18px;
+    margin-bottom: 10px;
+  }
+  #admin-pw-submit {
+    width: 100%;
+    padding: 12px;
+    background: #0025FF;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  #admin-pw-submit:hover { background: #0E0E96; }
+  #admin-pw-cancel {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 4px;
+  }
+  #admin-pw-cancel:hover { color: #555; }
+
+
+  /* Hint popup */
+  #hint-popup {
+    display: none;
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10,10,40,0.97);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 14px;
+    padding: 14px 20px;
+    max-width: min(340px, 88vw);
+    width: max-content;
+    z-index: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    text-align: center;
+    animation: hintFadeIn 0.15s ease;
+  }
+  #hint-popup.show { display: block; }
+  @keyframes hintFadeIn {
+    from { opacity:0; transform: translateX(-50%) translateY(-6px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+  }
+  #hint-popup .hint-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: #FFD700;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  #hint-popup .hint-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.4;
+  }
+  #hint-popup .hint-partial {
+    margin-top: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,200,60,0.85);
+    text-transform: uppercase;
+  }
+  #hint-btn.active { color: #FFD700; }
+  #hint-btn { display: none; }
+  #hint-btn.unlocked {
+    display: inline-flex;
+    animation: hintUnlock 0.5s ease forwards, hintPulse 1.2s ease 0.5s 4;
+  }
+  @keyframes hintUnlock {
+    0%   { transform: scale(0.4) rotate(-20deg); opacity: 0; }
+    60%  { transform: scale(1.25) rotate(8deg);  opacity: 1; }
+    100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+  }
+  @keyframes hintPulse {
+    0%,100% { color: inherit;  filter: drop-shadow(0 0 0px #FFD700); }
+    50%     { color: #FFD700;  filter: drop-shadow(0 0 8px #FFD700); }
+  }
+
 </style>
 </head>
 <body>
@@ -1090,11 +1246,7 @@
   </div>
   <p class="game-subtitle">The Official Conference Challenge</p>
   <div class="wod-badge" id="wod-badge">⚡ Puzzle <span id="puzzle-num-display">#1</span> Active</div>
-  <div class="puzzle-hint-wrap">
-    <div id="puzzle-hint"></div>
-    <div id="puzzle-partial"></div>
-  </div>
-  <div class="divider" style="margin-top:4px;"></div>
+  <div class="divider" style="margin-top:10px;"></div>
   <div class="stats-bar">
     <div class="stat">
       <div class="stat-num" id="stat-played">0</div>
@@ -1114,11 +1266,20 @@
     </div>
   </div>
   <div class="header-actions">
+    <button class="icon-btn" id="hint-btn" onclick="toggleHint()" title="Show Hint">💡</button>
     <button class="icon-btn" onclick="showLeaderboard()" title="Leaderboard">🏆</button>
     <button class="icon-btn" onclick="showHelp()" title="How to Play">?</button>
-    <button class="icon-btn" onclick="showAdmin()" title="Admin — Set Word">⚙</button>
+    <button class="icon-btn" onclick="showAdminPw()" title="Admin — Set Word">⚙</button>
   </div>
 </header>
+
+
+<!-- Hint Popup -->
+<div id="hint-popup">
+  <div class="hint-label">💡 Hint</div>
+  <div class="hint-text" id="hint-popup-text"></div>
+  <div class="hint-partial" id="hint-popup-partial"></div>
+</div>
 
 <!-- BOARD -->
 <div id="board-container">
@@ -2231,18 +2392,20 @@ async function loadWord() {
 
 function updatePuzzleDisplay() {
   document.getElementById('puzzle-num-display').textContent = '#' + puzzleNumber;
+  const _hbr = document.getElementById('hint-btn'); if(_hbr){ _hbr.classList.remove('unlocked','active'); } document.getElementById('hint-popup')?.classList.remove('show');
   document.getElementById('wod-badge').title = 'Puzzle ' + puzzleNumber;
   // Update hint display
-  const hintEl = document.getElementById('puzzle-hint');
-  const partialEl = document.getElementById('puzzle-partial');
-  if (hintEl) {
-    hintEl.textContent = currentHint || '';
-    hintEl.style.display = currentHint ? 'block' : 'none';
+  // Populate hint popup
+  const hintTextEl    = document.getElementById('hint-popup-text');
+  const hintPartialEl = document.getElementById('hint-popup-partial');
+  const hintBtn       = document.getElementById('hint-btn');
+  if (hintTextEl) hintTextEl.textContent = currentHint || '';
+  if (hintPartialEl) {
+    hintPartialEl.textContent = currentPartial || '';
+    hintPartialEl.style.display = currentPartial ? 'block' : 'none';
   }
-  if (partialEl) {
-    partialEl.textContent = currentPartial || '';
-    partialEl.style.display = currentPartial ? 'block' : 'none';
-  }
+  // Hide hint button if no hint available
+  if (hintBtn) hintBtn.style.display = currentHint ? '' : 'none';
 }
 
 function buildBoard() {
@@ -2353,6 +2516,13 @@ function submitGuess() {
   currentRow++;
   currentCol = 0;
   currentGuess = [];
+  // Unlock hint after 5 wrong guesses (currentRow is now the next row index = number of guesses made)
+  if (currentRow >= 5 && currentHint) {
+    const hintBtn = document.getElementById('hint-btn');
+    if (hintBtn && !hintBtn.classList.contains('unlocked')) {
+      hintBtn.classList.add('unlocked');
+    }
+  }
 }
 
 function evaluateGuess(guess) {
@@ -2611,7 +2781,7 @@ function updateStatDisplay() {
 // ─────────────────────────────────────────
 // ADMIN
 // ─────────────────────────────────────────
-function showAdmin() {
+function openAdminPanel() {
   document.getElementById('admin-panel').classList.add('show');
   const fbu = document.getElementById('firebase-url-input');
   if(fbu && (window._firebaseUrl||'')) fbu.value = window._firebaseUrl||'';
@@ -2933,6 +3103,77 @@ function isFirebaseConfigured() {
   return url && !url.includes('YOUR-PROJECT');
 }
 
+
+// ─── Admin password gate ────────────────────────────────────────────────
+// Password hash (SHA-256). Change ADMIN_PW_HASH to change the password.
+// To generate a new hash: https://emn178.github.io/online-tools/sha256.html
+const ADMIN_PW_HASH = 'b3dfc0f7b0c3c4e5f2a1d9e6c8b7a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8'; // placeholder — set below
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// Actual hash is set at runtime from the constant below
+const ADMIN_PASSWORD_HASH = (async () => await sha256('PEPSI2026!'))();
+
+function showAdminPw() {
+  document.getElementById('admin-pw-overlay').classList.add('show');
+  document.getElementById('admin-pw-input').value = '';
+  document.getElementById('admin-pw-error').textContent = '';
+  setTimeout(() => document.getElementById('admin-pw-input').focus(), 100);
+}
+
+function closeAdminPw() {
+  document.getElementById('admin-pw-overlay').classList.remove('show');
+}
+
+async function checkAdminPassword() {
+  const input = document.getElementById('admin-pw-input').value;
+  const inputHash = await sha256(input);
+  const correctHash = await ADMIN_PASSWORD_HASH;
+  if (inputHash === correctHash) {
+    closeAdminPw();
+    openAdminPanel();
+  } else {
+    const el = document.getElementById('admin-pw-input');
+    document.getElementById('admin-pw-error').textContent = 'Incorrect password. Try again.';
+    el.classList.add('error');
+    el.value = '';
+    setTimeout(() => el.classList.remove('error'), 500);
+    el.focus();
+  }
+}
+
+// Enter key submits
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('admin-pw-overlay').classList.contains('show')) {
+    checkAdminPassword();
+  }
+});
+// ────────────────────────────────────────────────────────────────────────
+
+function toggleHint() {
+  const popup = document.getElementById('hint-popup');
+  const btn   = document.getElementById('hint-btn');
+  const isOpen = popup.classList.contains('show');
+  popup.classList.toggle('show', !isOpen);
+  btn.classList.toggle('active', !isOpen);
+  // Auto-close when clicking outside
+  if (!isOpen) {
+    setTimeout(() => {
+      document.addEventListener('click', closeHintOnOutsideClick, { once: true });
+    }, 50);
+  }
+}
+function closeHintOnOutsideClick(e) {
+  const popup = document.getElementById('hint-popup');
+  const btn   = document.getElementById('hint-btn');
+  if (!popup.contains(e.target) && e.target !== btn) {
+    popup.classList.remove('show');
+    btn.classList.remove('active');
+  }
+}
 </script>
 
 <!-- NAME PROMPT -->
@@ -2963,6 +3204,21 @@ function isFirebaseConfigured() {
       <button class="lb-footer-btn secondary" onclick="closeLeaderboard()">Close</button>
       <button class="lb-footer-btn primary" onclick="shareResult()">📤 Share</button>
     </div>
+  </div>
+</div>
+
+
+<!-- Admin Password Overlay -->
+<div id="admin-pw-overlay">
+  <div id="admin-pw-box">
+    <div class="pw-logo">⚙️</div>
+    <h3>Admin Access</h3>
+    <p>Enter the admin password to continue</p>
+    <input type="password" id="admin-pw-input" placeholder="Password" autocomplete="off" />
+    <div id="admin-pw-error"></div>
+    <button id="admin-pw-submit" onclick="checkAdminPassword()">Unlock</button>
+    <br>
+    <button id="admin-pw-cancel" onclick="closeAdminPw()">Cancel</button>
   </div>
 </div>
 
