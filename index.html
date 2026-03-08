@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>PEPSI WORDL'D</title>
+<title>PEPSI WORDL'D — Global Control Conference 2026</title>
 <link id="site-favicon" rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="shortcut icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
@@ -3434,7 +3434,7 @@ function showToast(msg) {
 // ─────────────────────────────────────────
 function shareResult() {
   const emojiMap = { correct: '🟦', present: '🟥', absent: '⬜' };
-  const lines = guesses.map(({ result }) => result.map(r => emojiMap[r]).join('\n')).join('\n');
+  const lines = guesses.map(({ result }) => result.map(r => emojiMap[r]).join('')).join('\n');
   const won = guesses.length > 0 && guesses[guesses.length - 1]?.result.every(r => r === 'correct');
   const score = won ? guesses.length : 'X';
 
