@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>PEPSI WORDL'D — Global Control Conference '26</title>
+<title>PEPSI WORDL'D — Control Conference Game</title>
 <link id="site-favicon" rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="shortcut icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
@@ -2783,7 +2783,7 @@ function getActivePuzzleFromSet(puzzleSet) {
   if (!puzzleSet || !puzzleSet.length) {
     return { num:1, date:getLocalDateString(), word:'PEPSI', hint:'', partial:'' };
   }
-  return puzzleSet.find(p => !isPuzzleCompleted(p.num)) || puzzleSet[puzzleSet.length - 1];
+  return puzzleSet.find(p => !isPuzzleCompleted(p)) || puzzleSet[puzzleSet.length - 1];
 }
 
 
@@ -2809,19 +2809,26 @@ let guesses = [];
 // ─────────────────────────────────────────
 // GAME STATE PERSISTENCE (per puzzle)
 // ─────────────────────────────────────────
-function gameStateKey() {
-  return 'pepsiwordle_state_' + puzzleNumber;
+function legacyGameStateKey(num = puzzleNumber) {
+  return 'pepsiwordle_state_' + Number(num || 1);
+}
+
+function gameStateKey(dateStr = currentPuzzleDate, num = puzzleNumber) {
+  const safeDate = dateStr || getLocalDateString();
+  return 'pepsiwordle_state_' + safeDate + '_' + Number(num || 1);
 }
 
 function saveGameState() {
   try {
     const state = {
+      puzzleDate: currentPuzzleDate,
       puzzleNumber: puzzleNumber,
       guesses: guesses,
       gameOver: gameOver,
       keyStates: keyStates
     };
     localStorage.setItem(gameStateKey(), JSON.stringify(state));
+    localStorage.removeItem(legacyGameStateKey(puzzleNumber));
   } catch(e) {}
 }
 
@@ -2835,18 +2842,38 @@ function updateShareButtonVisibility() {
   shareBtn.classList.toggle('visible', hasShareableResult());
 }
 
-function getPuzzleState(num) {
+function getPuzzleState(puzzleOrNum, dateStr = currentPuzzleDate) {
   try {
-    const raw = localStorage.getItem('pepsiwordle_state_' + Number(num));
-    return raw ? JSON.parse(raw) : null;
+    const puzzle = (typeof puzzleOrNum === 'object' && puzzleOrNum) ? puzzleOrNum : null;
+    const num = Number(puzzle ? puzzle.num : puzzleOrNum);
+    const puzzleDate = puzzle ? (puzzle.date || dateStr || currentPuzzleDate) : (dateStr || currentPuzzleDate);
+
+    const scopedRaw = localStorage.getItem(gameStateKey(puzzleDate, num));
+    if (scopedRaw) return JSON.parse(scopedRaw);
+
+    const legacyRaw = localStorage.getItem(legacyGameStateKey(num));
+    return legacyRaw ? JSON.parse(legacyRaw) : null;
   } catch(e) {
     return null;
   }
 }
 
-function isPuzzleCompleted(num) {
-  const state = getPuzzleState(num);
-  return !!(state && state.gameOver && Array.isArray(state.guesses) && state.guesses.length);
+function isPuzzleCompleted(puzzleOrNum, dateStr = currentPuzzleDate) {
+  const state = getPuzzleState(puzzleOrNum, dateStr);
+  if (!state) return false;
+
+  const puzzle = (typeof puzzleOrNum === 'object' && puzzleOrNum) ? puzzleOrNum : null;
+  const expectedNum = Number(puzzle ? puzzle.num : puzzleOrNum);
+  const expectedDate = puzzle ? (puzzle.date || dateStr || currentPuzzleDate) : (dateStr || currentPuzzleDate);
+
+  const stateDate = state.puzzleDate || expectedDate;
+  return !!(
+    state.gameOver &&
+    Number(state.puzzleNumber) === expectedNum &&
+    String(stateDate) === String(expectedDate) &&
+    Array.isArray(state.guesses) &&
+    state.guesses.length
+  );
 }
 
 function getDailyPuzzleCount() {
@@ -2855,8 +2882,8 @@ function getDailyPuzzleCount() {
 
 function getCompletedPuzzleCount() {
   if (!todaysPuzzleSet.length) return gameOver ? 1 : 0;
-  let completed = todaysPuzzleSet.filter(p => isPuzzleCompleted(p.num)).length;
-  if (gameOver && todaysPuzzleSet.some(p => p.num === puzzleNumber)) {
+  let completed = todaysPuzzleSet.filter(p => isPuzzleCompleted(p)).length;
+  if (gameOver && todaysPuzzleSet.some(p => Number(p.num) === Number(puzzleNumber) && String(p.date) === String(currentPuzzleDate))) {
     completed = Math.max(completed, 1);
   }
   return completed;
@@ -3040,10 +3067,11 @@ function playNextPuzzle() {
 
 function restoreGameState() {
   try {
-    const raw = localStorage.getItem(gameStateKey());
+    const raw = localStorage.getItem(gameStateKey()) || localStorage.getItem(legacyGameStateKey(puzzleNumber));
     if (!raw) return false;
     const state = JSON.parse(raw);
-    if (!state || state.puzzleNumber !== puzzleNumber || !state.guesses || !state.guesses.length) return false;
+    const stateDate = state?.puzzleDate || currentPuzzleDate;
+    if (!state || Number(state.puzzleNumber) !== Number(puzzleNumber) || String(stateDate) !== String(currentPuzzleDate) || !state.guesses || !state.guesses.length) return false;
 
     // Replay all saved guesses instantly (no animation)
     for (const g of state.guesses) {
