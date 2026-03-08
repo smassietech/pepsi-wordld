@@ -218,7 +218,7 @@
     justify-content: center;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
-    font-size: clamp(1.2rem, 4.5vw, 2rem);
+    font-size: clamp(1.65rem, 5.2vw, 2.55rem);
     color: var(--text-dark);
     transition: border-color 0.1s;
     position: relative;
@@ -300,7 +300,7 @@
     color: var(--text-dark);
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 1.05rem;
     letter-spacing: 0.03em;
     cursor: pointer;
     transition: transform 0.08s, background 0.3s, color 0.3s;
@@ -308,12 +308,12 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    max-width: 36px;
+    max-width: 42px;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .key.wide { max-width: 52px; font-size: 0.7rem; }
+  .key.wide { max-width: 64px; font-size: 0.86rem; }
 
   .key:active { transform: scale(0.92); }
 
@@ -725,9 +725,9 @@
     .stats-bar { gap: 16px; padding: 2px 0 0; }
     .stat-num { font-size: 1.1rem; }
     .stat-label { font-size: 0.5rem; }
-    .tile { font-size: clamp(1rem, 3.5vw, 1.5rem); }
-    .key { height: 42px; }
-    .key.wide { font-size: 0.65rem; }
+    .tile { font-size: clamp(1.4rem, 4.6vw, 2rem); }
+    .key { height: 46px; font-size: 0.98rem; }
+    .key.wide { font-size: 0.8rem; }
     #keyboard { padding: 2px 8px 6px; }
     .wod-badge { font-size: 0.6rem; padding: 3px 10px; margin-bottom: 2px; }
   }
@@ -735,19 +735,19 @@
     .stats-bar { display: none; }
     .divider { display: none; }
     header { padding: 4px 16px 2px; }
-    .key { height: 38px; }
+    .key { height: 42px; font-size: 0.94rem; }
     #keyboard { padding: 2px 6px 4px; }
   }
   @media (max-width: 380px) {
-    .key { min-width: 24px; font-size: 0.78rem; }
-    .key.wide { min-width: 36px; font-size: 0.62rem; }
+    .key { min-width: 26px; font-size: 0.92rem; }
+    .key.wide { min-width: 42px; font-size: 0.76rem; }
     #keyboard { padding: 2px 4px 8px; }
     .kb-row { gap: 3px; }
   }
   /* Tall narrow phones */
   @media (min-height: 800px) and (max-width: 430px) {
     #board { width: min(300px, calc(100vw - 48px)); height: min(360px, 52vh); }
-    .key { height: 46px; }
+    .key { height: 50px; }
   }
   /* Safe area for notched phones */
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
@@ -902,7 +902,7 @@
   .lb-table td {
     padding: 9px 8px;
     border-bottom: 1px solid #f7f7f7;
-    font-size: 0.88rem;
+    font-size: 1.05rem;
     color: #333;
     vertical-align: middle;
   }
@@ -1002,7 +1002,7 @@
     border: none;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 1.05rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
@@ -1121,7 +1121,7 @@
   #puzzle-hint {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
-    font-size: 0.88rem;
+    font-size: 1.05rem;
     color: rgba(255,255,255,0.85);
     text-align: center;
     background: rgba(255,255,255,0.08);
