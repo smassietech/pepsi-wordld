@@ -1380,9 +1380,86 @@
     50%     { color: #FFD700;  filter: drop-shadow(0 0 8px #FFD700); }
   }
 
+
+
+  /* Mobile landscape blocker */
+  #rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    background: linear-gradient(160deg, #000000 0%, #0E0E96 45%, #0025FF 100%);
+    color: white;
+    padding: 24px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #rotate-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 30%, transparent 60%);
+    pointer-events: none;
+  }
+  .rotate-card {
+    position: relative;
+    z-index: 1;
+    max-width: 340px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+  }
+  .rotate-icon {
+    font-size: 44px;
+    line-height: 1;
+    margin-bottom: 14px;
+  }
+  .rotate-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 5vw, 2.3rem);
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+  }
+  .rotate-text {
+    font-size: clamp(1rem, 2.8vw, 1.08rem);
+    line-height: 1.45;
+    color: rgba(255,255,255,0.95);
+  }
+  .rotate-text strong {
+    color: #fff;
+  }
+
+  @media (pointer: coarse) and (orientation: landscape) and (max-height: 560px) {
+    #app-shell {
+      display: none !important;
+    }
+    #rotate-overlay {
+      display: flex;
+    }
+    body {
+      overflow: hidden;
+    }
+  }
+
 </style>
 </head>
 <body>
+
+<div id="rotate-overlay" aria-live="polite" aria-label="Rotate device message">
+  <div class="rotate-card">
+    <div class="rotate-icon">📱↻</div>
+    <div class="rotate-title">Oh no!</div>
+    <div class="rotate-text">We can’t fit everything on your screen.<br>Please rotate your device.</div>
+  </div>
+</div>
+
+<div id="app-shell">
 
 <div id="toast"></div>
 
@@ -1554,6 +1631,8 @@
       <div id="schedule-preview" style="max-height:180px;overflow-y:auto;font-size:0.75rem;color:#555;line-height:1.8;"></div>
     </div>
   </div>
+</div>
+
 </div>
 
 <script>
