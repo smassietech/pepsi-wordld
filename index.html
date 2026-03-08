@@ -1326,6 +1326,7 @@
     <div class="end-word" id="end-word"></div>
     <button class="share-btn" onclick="shareResult()">📤 Share Result</button>
     <button class="share-btn" style="background:var(--correct)" onclick="closeEndOverlay();showLeaderboard()">🏆 View Leaderboard</button>
+    <button class="share-btn" style="background:transparent;color:#888;border:1px solid #ddd;margin-bottom:0" onclick="closeEndOverlay()">Close</button>
   </div>
 </div>
 
@@ -2484,6 +2485,65 @@ let stats = { played: 0, wins: 0, streak: 0, best: 0 };
 let guesses = [];
 
 // ─────────────────────────────────────────
+// GAME STATE PERSISTENCE (per puzzle)
+// ─────────────────────────────────────────
+function gameStateKey() {
+  return 'pepsiwordle_state_' + puzzleNumber;
+}
+
+function saveGameState() {
+  try {
+    const state = {
+      puzzleNumber: puzzleNumber,
+      guesses: guesses,
+      gameOver: gameOver,
+      keyStates: keyStates
+    };
+    localStorage.setItem(gameStateKey(), JSON.stringify(state));
+  } catch(e) {}
+}
+
+function restoreGameState() {
+  try {
+    const raw = localStorage.getItem(gameStateKey());
+    if (!raw) return false;
+    const state = JSON.parse(raw);
+    if (!state || state.puzzleNumber !== puzzleNumber || !state.guesses || !state.guesses.length) return false;
+
+    // Replay all saved guesses instantly (no animation)
+    for (const g of state.guesses) {
+      const letters = g.guess.split('');
+      for (let c = 0; c < COLS; c++) {
+        const tile = board[currentRow][c];
+        tile.textContent = letters[c];
+        const color = RESULT_COLORS[g.result[c]];
+        tile.style.background = color;
+        tile.style.borderColor = color;
+        tile.classList.add('filled', 'revealed', g.result[c]);
+      }
+      guesses.push(g);
+      updateKeyboard(g.guess, g.result);
+      currentRow++;
+    }
+
+    // Restore game-over flag
+    if (state.gameOver) {
+      gameOver = true;
+    }
+
+    // Restore hint unlock if enough wrong guesses were made
+    if (currentRow >= 5 && currentHint) {
+      const hintBtn = document.getElementById('hint-btn');
+      if (hintBtn) hintBtn.classList.add('unlocked');
+    }
+
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+// ─────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────
 function init() {
@@ -2543,6 +2603,8 @@ function updatePuzzleDisplay() {
   }
   // Hide hint button if no hint available
   if (hintBtn) hintBtn.style.display = currentHint ? '' : 'none';
+  // Restore any saved progress for this puzzle
+  restoreGameState();
 }
 
 function buildBoard() {
@@ -2649,6 +2711,7 @@ function submitGuess() {
     } else if (currentRow >= ROWS) {
       onLose();
     }
+    saveGameState();
   });
   currentRow++;
   currentCol = 0;
