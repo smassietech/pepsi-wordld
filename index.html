@@ -664,6 +664,23 @@
     transform: scale(1.08);
   }
 
+  #share-main-btn {
+    display: none;
+  }
+  #share-main-btn.visible {
+    display: inline-flex;
+    animation: shareUnlock 0.35s ease forwards;
+  }
+  #share-main-btn .share-icon {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  @keyframes shareUnlock {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.12); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
   /* Confetti */
   .confetti-piece {
     position: fixed;
@@ -1318,6 +1335,7 @@
   <div class="header-actions">
     <button class="icon-btn" id="hint-btn" onclick="toggleHint()" title="Show Hint">💡</button>
     <button class="icon-btn" onclick="showLeaderboard()" title="Leaderboard">🏆</button>
+    <button class="icon-btn" id="share-main-btn" onclick="shareResult()" title="Share Result" aria-label="Share Result"><span class="share-icon">📤</span></button>
     <button class="icon-btn" onclick="showHelp()" title="How to Play">?</button>
     <button class="icon-btn" onclick="showAdminPw()" title="Admin — Set Word">⚙</button>
   </div>
@@ -1349,8 +1367,8 @@
     <div class="end-emoji" id="end-emoji"><img id="end-emoji-img" src="" alt="" style="width:72px;height:72px;object-fit:contain;" /></div>
     <div class="end-title" id="end-title">NICE!</div>
     <div class="end-word" id="end-word"></div>
-    <button class="share-btn" onclick="shareResult()">📤 Share Result</button>
     <button class="share-btn" style="background:var(--correct)" onclick="closeEndOverlay();showLeaderboard()">🏆 View Leaderboard</button>
+    <button class="share-btn" onclick="shareResult()">📤 Share Result</button>
     <button class="share-btn" style="background:transparent;color:#888;border:1px solid #ddd;margin-bottom:0" onclick="closeEndOverlay()">Close</button>
   </div>
 </div>
@@ -2528,6 +2546,16 @@ function saveGameState() {
   } catch(e) {}
 }
 
+function hasShareableResult() {
+  return gameOver && guesses.length > 0;
+}
+
+function updateShareButtonVisibility() {
+  const shareBtn = document.getElementById('share-main-btn');
+  if (!shareBtn) return;
+  shareBtn.classList.toggle('visible', hasShareableResult());
+}
+
 function restoreGameState() {
   try {
     const raw = localStorage.getItem(gameStateKey());
@@ -2555,6 +2583,7 @@ function restoreGameState() {
     if (state.gameOver) {
       gameOver = true;
     }
+    updateShareButtonVisibility();
 
     // Restore hint unlock if enough wrong guesses were made
     if (currentRow >= 5 && currentHint) {
@@ -2615,6 +2644,7 @@ async function loadWord() {
 function updatePuzzleDisplay() {
   document.getElementById('puzzle-num-display').textContent = '#' + puzzleNumber;
   const _hbr = document.getElementById('hint-btn'); if(_hbr){ _hbr.classList.remove('unlocked','active'); } document.getElementById('hint-popup')?.classList.remove('show');
+  const _shareBtn = document.getElementById('share-main-btn'); if (_shareBtn) _shareBtn.classList.remove('visible');
   document.getElementById('wod-badge').title = 'Puzzle ' + puzzleNumber;
   // Update hint display
   // Populate hint popup
@@ -2808,6 +2838,7 @@ const WIN_MSGS = ['INCREDIBLE!','AWESOME!','GREAT JOB!','NICE!','PHEW!','LUCKY O
 
 function onWin() {
   gameOver = true;
+  updateShareButtonVisibility();
   stats.played++;
   stats.wins++;
   stats.streak++;
@@ -2829,6 +2860,7 @@ function onWin() {
 
 function onLose() {
   gameOver = true;
+  updateShareButtonVisibility();
   stats.played++;
   stats.streak = 0;
   saveStats();
@@ -3529,7 +3561,6 @@ function closeHintOnOutsideClick(e) {
     </div>
     <div class="lb-footer">
       <button class="lb-footer-btn secondary" onclick="closeLeaderboard()">Close</button>
-      <button class="lb-footer-btn primary" onclick="shareResult()">📤 Share</button>
     </div>
   </div>
 </div>
