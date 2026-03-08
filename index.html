@@ -3520,9 +3520,24 @@ function storePlayerName(name) {
   return clean;
 }
 
+function formatLeaderboardDateKey(dateStr = currentPuzzleDate || getLocalDateString()) {
+  const raw = String(dateStr || '').trim();
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (match) {
+    const [, y, m, d] = match;
+    return Number(m) + '-' + Number(d) + '-' + y;
+  }
+  return raw.replace(/\//g, '-');
+}
+
+function getLeaderboardPuzzleKey() {
+  return 'puzzle-' + (Number(puzzleNumber) || 1);
+}
+
 function fbPath() {
-  // Each puzzle gets its own node: /scores/puzzle-1/
-  return FIREBASE_URL + 'scores/puzzle-' + puzzleNumber + '/';
+  // Scores are grouped by date first, then puzzle number:
+  // /scores/3-8-2026/puzzle-1/
+  return FIREBASE_URL + 'scores/' + formatLeaderboardDateKey() + '/' + getLeaderboardPuzzleKey() + '/';
 }
 
 function isFirebaseConfigured() {
@@ -3552,8 +3567,8 @@ async function saveScore(playerName, won, guessCount) {
     let scores = res.ok ? (await res.json() || []) : [];
     if (!Array.isArray(scores)) scores = Object.values(scores);
 
-    // Remove previous entry with same name
-    scores = scores.filter(s => s && s.name && s.name.toLowerCase() !== entry.name.toLowerCase());
+    // Keep every finished puzzle result as its own leaderboard entry.
+    // Do not overwrite prior posts from the same player name.
     scores.push(entry);
     scores.sort((a, b) => a.guesses - b.guesses || a.ts - b.ts);
     if (scores.length > 200) scores = scores.slice(0, 200);
@@ -3723,7 +3738,32 @@ async function loadAllScores() {
     const res = await fetch(url);
     if (!res.ok) return {};
     const data = await res.json();
-    return data || {};
+    if (!data || typeof data !== 'object') return {};
+
+    // Support both legacy flat structure:
+    //   scores/puzzle-1/[...]
+    // and new date-first structure:
+    //   scores/3-8-2026/puzzle-1/[...]
+    const flattened = {};
+
+    for (const [topKey, topValue] of Object.entries(data)) {
+      if (!topValue) continue;
+
+      if (topKey.startsWith('puzzle-')) {
+        flattened[topKey] = topValue;
+        continue;
+      }
+
+      if (typeof topValue === 'object') {
+        for (const [childKey, childValue] of Object.entries(topValue)) {
+          if (!childValue) continue;
+          const combinedKey = topKey + '/' + childKey;
+          flattened[combinedKey] = childValue;
+        }
+      }
+    }
+
+    return flattened;
   } catch(e) {
     return {};
   }
@@ -3735,7 +3775,7 @@ function switchLbTab(tab) {
   currentLbTab = tab;
   document.getElementById('lb-tab-puzzle').classList.toggle('active', tab === 'puzzle');
   document.getElementById('lb-tab-overall').classList.toggle('active', tab === 'overall');
-  document.getElementById('lb-puzzle-badge').textContent = tab === 'puzzle' ? 'Puzzle #' + puzzleNumber : 'All Puzzles';
+  document.getElementById('lb-puzzle-badge').textContent = tab === 'puzzle' ? (formatLeaderboardDateKey() + ' • Puzzle #' + puzzleNumber) : 'All Puzzles';
   document.getElementById('lb-content').innerHTML = '<div class="lb-loading">Loading scores…</div>';
   document.getElementById('lb-sub').textContent = 'Loading…';
 
@@ -3836,7 +3876,7 @@ function loadFirebaseUrl() {
 const _origFbPath = fbPath;
 function fbPath() {
   const url = window._firebaseUrl || FIREBASE_URL;
-  return url + 'scores/puzzle-' + puzzleNumber + '/';
+  return url + 'scores/' + formatLeaderboardDateKey() + '/' + getLeaderboardPuzzleKey() + '/';
 }
 
 function isFirebaseConfigured() {
