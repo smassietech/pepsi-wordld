@@ -185,7 +185,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px 0;
+    padding: 4px 0 22px;
     position: relative;
     z-index: 10;
     min-height: 0;
@@ -278,6 +278,7 @@
     width: 100%;
     max-width: 484px;
     padding: 4px 8px 10px;
+    margin-top: 14px;
     position: relative;
     z-index: 10;
     flex-shrink: 0;
@@ -728,15 +729,16 @@
     .tile { font-size: clamp(1.4rem, 4.6vw, 2rem); }
     .key { height: 46px; font-size: 0.98rem; }
     .key.wide { font-size: 0.8rem; }
-    #keyboard { padding: 2px 8px 6px; }
-    .wod-badge { font-size: 0.6rem; padding: 3px 10px; margin-bottom: 2px; }
+    #board-container { padding-bottom: 16px; }
+    #keyboard { padding: 2px 8px 6px; margin-top: 10px; }
   }
   @media (max-height: 600px) {
     .stats-bar { display: none; }
     .divider { display: none; }
     header { padding: 4px 16px 2px; }
     .key { height: 42px; font-size: 0.94rem; }
-    #keyboard { padding: 2px 6px 4px; }
+    #board-container { padding-bottom: 12px; }
+    #keyboard { padding: 2px 6px 4px; margin-top: 8px; }
   }
   @media (max-width: 380px) {
     .key { min-width: 26px; font-size: 0.92rem; }
@@ -756,17 +758,7 @@
 
   /* Word-of-day badge */
   .wod-badge {
-    background: rgba(255,20,0,0.15);
-    border: 1px solid rgba(255,20,0,0.35);
-    color: rgba(255,255,255,0.75);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 100px;
-    margin-bottom: 2px;
+    display: none;
   }
 
   /* --- LEADERBOARD OVERLAY --- */
