@@ -298,6 +298,73 @@
     flex-shrink: 0;
   }
 
+  .daily-progress-panel {
+    width: 100%;
+    max-width: 484px;
+    padding: 8px 14px 12px;
+    margin-top: 14px;
+    position: relative;
+    z-index: 10;
+    display: none;
+    flex-shrink: 0;
+  }
+  .daily-progress-panel.show {
+    display: block;
+  }
+  .daily-progress-card {
+    background: rgba(255,255,255,0.96);
+    border-radius: 18px;
+    padding: 20px 18px;
+    text-align: center;
+    box-shadow: 0 14px 32px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.7);
+  }
+  .daily-progress-kicker {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pepsi-red);
+    margin-bottom: 8px;
+  }
+  .daily-progress-title {
+    font-family: 'PepsiOwners', 'Bebas Neue', cursive;
+    font-size: 1.8rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--pepsi-blue);
+    margin-bottom: 8px;
+  }
+  .daily-progress-text {
+    color: #4a5568;
+    font-size: 1rem;
+    line-height: 1.45;
+    margin-bottom: 16px;
+  }
+  .daily-progress-btn {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    background: var(--pepsi-blue);
+    color: #fff;
+    padding: 14px 18px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.2s ease;
+  }
+  .daily-progress-btn:hover {
+    background: var(--pepsi-blue-dark);
+    transform: scale(1.01);
+  }
+  .daily-progress-btn[hidden] {
+    display: none !important;
+  }
+
   .kb-row {
     display: flex;
     justify-content: center;
@@ -745,6 +812,8 @@
     .key.wide { font-size: 0.8rem; }
     #board-container { padding-bottom: 16px; }
     #keyboard { padding: 2px 8px 6px; margin-top: 10px; }
+    .daily-progress-panel { padding: 6px 10px 8px; margin-top: 10px; }
+    .daily-progress-card { padding: 18px 16px; }
   }
   @media (max-height: 600px) {
     .stats-bar { display: none; }
@@ -753,11 +822,16 @@
     .key { height: 42px; font-size: 0.94rem; }
     #board-container { padding-bottom: 12px; }
     #keyboard { padding: 2px 6px 4px; margin-top: 8px; }
+    .daily-progress-panel { padding: 4px 8px 6px; margin-top: 8px; }
+    .daily-progress-title { font-size: 1.55rem; }
+    .daily-progress-text { font-size: 0.94rem; }
   }
   @media (max-width: 380px) {
     .key { min-width: 26px; font-size: 0.92rem; }
     .key.wide { min-width: 42px; font-size: 0.76rem; }
     #keyboard { padding: 2px 4px 8px; }
+    .daily-progress-panel { padding: 4px 4px 8px; }
+    .daily-progress-card { padding: 16px 14px; }
     .kb-row { gap: 3px; }
   }
   /* Tall narrow phones */
@@ -768,6 +842,7 @@
   /* Safe area for notched phones */
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     #keyboard { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+    .daily-progress-panel { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
   }
 
   /* Word-of-day badge */
@@ -1365,6 +1440,15 @@
   <div class="kb-row" id="kb-row-1"></div>
   <div class="kb-row" id="kb-row-2"></div>
   <div class="kb-row" id="kb-row-3"></div>
+</div>
+
+<div id="daily-progress-panel" class="daily-progress-panel" aria-live="polite">
+  <div class="daily-progress-card">
+    <div class="daily-progress-kicker">Daily Puzzle Progress</div>
+    <div class="daily-progress-title" id="daily-progress-title">1 / 3 Complete</div>
+    <div class="daily-progress-text" id="daily-progress-text">You've completed 1 out of 3 puzzles available today.</div>
+    <button id="daily-progress-next-btn" class="daily-progress-btn" onclick="playNextPuzzle()">Play Next Puzzle</button>
+  </div>
 </div>
 
 <!-- END OVERLAY -->
@@ -2489,28 +2573,93 @@ async function loadWordList() {
 // ─────────────────────────────────────────
 // PUZZLE SCHEDULE — loaded from puzzles.json
 // ─────────────────────────────────────────
+const DEFAULT_DAILY_PUZZLE_COUNT = 3;
 let PUZZLE_SCHEDULE = [];
+let todaysPuzzleSet = [];
+let currentPuzzleDate = '';
+
+function getLocalDateString(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 async function loadPuzzleSchedule() {
   try {
     const res = await fetch('puzzles.json?v=' + Date.now());
-    PUZZLE_SCHEDULE = await res.json();
+    const raw = await res.json();
+    PUZZLE_SCHEDULE = Array.isArray(raw) ? raw.slice() : [];
   } catch(e) {
-    // Fallback: single default puzzle if fetch fails (e.g. opened as local file)
-    PUZZLE_SCHEDULE = [{ num:1, date:'2026-03-07', word:'PEPSI', hint:'The flagship cola brand — served ice cold 🥤', partial:'' }];
+    // Fallback: simple 3-puzzle day if fetch fails (e.g. opened as local file)
+    PUZZLE_SCHEDULE = [
+      { num:1, date:'2026-03-07', word:'PEPSI', hint:'The flagship cola brand — served ice cold 🥤', partial:'' },
+      { num:2, date:'2026-03-07', word:'CRUSH', hint:'This orange soda brand is a PepsiCo classic 🍊', partial:'' },
+      { num:3, date:'2026-03-07', word:'LEMON', hint:'Mountain Dew\'s key citrus flavor 🍋', partial:'' }
+    ];
   }
+
+  PUZZLE_SCHEDULE = PUZZLE_SCHEDULE
+    .filter(p => p && p.word && p.date)
+    .map(p => ({
+      ...p,
+      num: Number(p.num) || 1,
+      word: String(p.word).trim().toUpperCase(),
+      hint: p.hint || '',
+      partial: p.partial || ''
+    }))
+    .filter(p => /^[A-Z]{5}$/.test(p.word))
+    .sort((a, b) => (a.date || '').localeCompare(b.date || '') || a.num - b.num);
 }
 
-function getTodaysPuzzle() {
-  const today = new Date().toISOString().slice(0, 10);
-  const p = PUZZLE_SCHEDULE.find(p => p.date === today);
-  if (p) return p;
-  // Past end of schedule: cycle back
-  const first = PUZZLE_SCHEDULE[0];
-  if (!first) return { num:1, word:'PEPSI', hint:'', partial:'' };
-  const startDate = new Date(first.date);
-  const daysSince = Math.floor((new Date() - startDate) / 86400000);
-  return PUZZLE_SCHEDULE[daysSince % PUZZLE_SCHEDULE.length];
+function getPuzzleGroups() {
+  const groups = new Map();
+  for (const puzzle of PUZZLE_SCHEDULE) {
+    if (!groups.has(puzzle.date)) groups.set(puzzle.date, []);
+    groups.get(puzzle.date).push(puzzle);
+  }
+  for (const puzzles of groups.values()) {
+    puzzles.sort((a, b) => a.num - b.num);
+  }
+  return groups;
+}
+
+function getPuzzlesForDate(dateStr) {
+  return (getPuzzleGroups().get(dateStr) || []).slice().sort((a, b) => a.num - b.num);
+}
+
+function getTodaysPuzzleSet() {
+  const today = getLocalDateString();
+  const groups = getPuzzleGroups();
+  const todaysSet = groups.get(today);
+  if (todaysSet && todaysSet.length) return todaysSet.slice().sort((a, b) => a.num - b.num);
+
+  const datedSets = Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  if (!datedSets.length) return [{ num:1, date:today, word:'PEPSI', hint:'', partial:'' }];
+
+  const firstDate = datedSets[0][0];
+  const baseDate = new Date(firstDate + 'T00:00:00');
+  const now = new Date();
+  const todayDate = new Date(getLocalDateString(now) + 'T00:00:00');
+  const daysSince = Math.floor((todayDate - baseDate) / 86400000);
+  const safeIndex = ((daysSince % datedSets.length) + datedSets.length) % datedSets.length;
+  return datedSets[safeIndex][1].slice().sort((a, b) => a.num - b.num);
+}
+
+function getScheduledPuzzleByNumber(num) {
+  return PUZZLE_SCHEDULE.find(p => p.num === Number(num)) || null;
+}
+
+function getScheduleSetForPuzzle(puzzle) {
+  if (!puzzle || !puzzle.date) return [];
+  return getPuzzlesForDate(puzzle.date);
+}
+
+function getActivePuzzleFromSet(puzzleSet) {
+  if (!puzzleSet || !puzzleSet.length) {
+    return { num:1, date:getLocalDateString(), word:'PEPSI', hint:'', partial:'' };
+  }
+  return puzzleSet.find(p => !isPuzzleCompleted(p.num)) || puzzleSet[puzzleSet.length - 1];
 }
 
 
@@ -2560,6 +2709,116 @@ function updateShareButtonVisibility() {
   const shareBtn = document.getElementById('share-main-btn');
   if (!shareBtn) return;
   shareBtn.classList.toggle('visible', hasShareableResult());
+}
+
+function getPuzzleState(num) {
+  try {
+    const raw = localStorage.getItem('pepsiwordle_state_' + Number(num));
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) {
+    return null;
+  }
+}
+
+function isPuzzleCompleted(num) {
+  const state = getPuzzleState(num);
+  return !!(state && state.gameOver && Array.isArray(state.guesses) && state.guesses.length);
+}
+
+function getDailyPuzzleCount() {
+  return todaysPuzzleSet.length || DEFAULT_DAILY_PUZZLE_COUNT;
+}
+
+function getCompletedPuzzleCount() {
+  if (!todaysPuzzleSet.length) return gameOver ? 1 : 0;
+  let completed = todaysPuzzleSet.filter(p => isPuzzleCompleted(p.num)).length;
+  if (gameOver && todaysPuzzleSet.some(p => p.num === puzzleNumber)) {
+    completed = Math.max(completed, 1);
+  }
+  return completed;
+}
+
+function getNextPuzzleInSet() {
+  return todaysPuzzleSet.find(p => !isPuzzleCompleted(p.num)) || null;
+}
+
+function updateDailyProgressPanel() {
+  const keyboard = document.getElementById('keyboard');
+  const panel = document.getElementById('daily-progress-panel');
+  const title = document.getElementById('daily-progress-title');
+  const textEl = document.getElementById('daily-progress-text');
+  const nextBtn = document.getElementById('daily-progress-next-btn');
+  if (!keyboard || !panel || !title || !textEl || !nextBtn) return;
+
+  if (!gameOver) {
+    keyboard.style.display = '';
+    panel.classList.remove('show');
+    nextBtn.hidden = true;
+    return;
+  }
+
+  const completed = getCompletedPuzzleCount();
+  const total = getDailyPuzzleCount();
+  const nextPuzzle = getNextPuzzleInSet();
+  const allDone = completed >= total || !nextPuzzle;
+
+  title.textContent = `${completed} / ${total} Complete`;
+
+  if (allDone) {
+    textEl.textContent = `You've completed all ${total} out of ${total} puzzles today. Play again tomorrow.`;
+    nextBtn.hidden = true;
+  } else {
+    textEl.textContent = `You've completed ${completed} out of ${total} puzzles available today.`;
+    nextBtn.hidden = false;
+    nextBtn.textContent = `Play Puzzle #${nextPuzzle.num}`;
+  }
+
+  keyboard.style.display = 'none';
+  panel.classList.add('show');
+}
+
+function resetCurrentPuzzleView() {
+  currentRow = 0;
+  currentCol = 0;
+  currentGuess = [];
+  gameOver = false;
+  board = [];
+  keyStates = {};
+  guesses = [];
+  buildBoard();
+  buildKeyboard();
+  document.getElementById('end-overlay')?.classList.remove('show');
+  document.getElementById('hint-popup')?.classList.remove('show');
+  const hintBtn = document.getElementById('hint-btn');
+  if (hintBtn) hintBtn.classList.remove('unlocked', 'active');
+  const progressPanel = document.getElementById('daily-progress-panel');
+  if (progressPanel) progressPanel.classList.remove('show');
+  const keyboard = document.getElementById('keyboard');
+  if (keyboard) keyboard.style.display = '';
+  updateShareButtonVisibility();
+}
+
+function activatePuzzle(puzzle) {
+  if (!puzzle) return;
+  todaysPuzzleSet = getScheduleSetForPuzzle(puzzle);
+  if (!todaysPuzzleSet.length) todaysPuzzleSet = [puzzle];
+  currentPuzzleDate = puzzle.date || getLocalDateString();
+  targetWord = puzzle.word;
+  puzzleNumber = Number(puzzle.num) || 1;
+  currentHint = puzzle.hint || '';
+  currentPartial = puzzle.partial || '';
+  VALID_WORDS.add(targetWord);
+  resetCurrentPuzzleView();
+  updatePuzzleDisplay();
+}
+
+function playNextPuzzle() {
+  const nextPuzzle = getNextPuzzleInSet();
+  if (!nextPuzzle) {
+    updateDailyProgressPanel();
+    return;
+  }
+  activatePuzzle(nextPuzzle);
 }
 
 function restoreGameState() {
@@ -2625,47 +2884,44 @@ async function loadWord() {
     try {
       const decoded = atob(encoded).toUpperCase();
       if (/^[A-Z]{5}$/.test(decoded)) {
-        targetWord = decoded;
-        VALID_WORDS.add(targetWord);
-        puzzleNumber = numParam ? parseInt(numParam, 10) : 1;
-        // Look up hint from schedule if this is a scheduled puzzle
-        const scheduled = PUZZLE_SCHEDULE.find(p => p.num === puzzleNumber);
-        currentHint = scheduled ? scheduled.hint : '';
-        currentPartial = scheduled ? scheduled.partial : '';
-        updatePuzzleDisplay();
+        const scheduled = numParam ? getScheduledPuzzleByNumber(parseInt(numParam, 10)) : null;
+        const fallbackPuzzle = {
+          num: numParam ? parseInt(numParam, 10) : 1,
+          date: scheduled?.date || getLocalDateString(),
+          word: decoded,
+          hint: scheduled?.hint || '',
+          partial: scheduled?.partial || ''
+        };
+        activatePuzzle(scheduled || fallbackPuzzle);
         return;
       }
     } catch(e) {}
   }
-  // Auto-select today's puzzle from the schedule
-  const todayPuzzle = getTodaysPuzzle();
-  targetWord = todayPuzzle.word;
-  puzzleNumber = todayPuzzle.num;
-  currentHint = todayPuzzle.hint;
-  currentPartial = todayPuzzle.partial;
-  VALID_WORDS.add(targetWord);
-  updatePuzzleDisplay();
+
+  todaysPuzzleSet = getTodaysPuzzleSet();
+  const activePuzzle = getActivePuzzleFromSet(todaysPuzzleSet);
+  activatePuzzle(activePuzzle);
 }
 
 function updatePuzzleDisplay() {
   document.getElementById('puzzle-num-display').textContent = '#' + puzzleNumber;
-  const _hbr = document.getElementById('hint-btn'); if(_hbr){ _hbr.classList.remove('unlocked','active'); } document.getElementById('hint-popup')?.classList.remove('show');
-  const _shareBtn = document.getElementById('share-main-btn'); if (_shareBtn) _shareBtn.classList.remove('visible');
+  const hintBtn = document.getElementById('hint-btn');
+  if (hintBtn) hintBtn.classList.remove('unlocked', 'active');
+  document.getElementById('hint-popup')?.classList.remove('show');
   document.getElementById('wod-badge').title = 'Puzzle ' + puzzleNumber;
-  // Update hint display
-  // Populate hint popup
-  const hintTextEl    = document.getElementById('hint-popup-text');
+
+  const hintTextEl = document.getElementById('hint-popup-text');
   const hintPartialEl = document.getElementById('hint-popup-partial');
-  const hintBtn       = document.getElementById('hint-btn');
   if (hintTextEl) hintTextEl.textContent = currentHint || '';
   if (hintPartialEl) {
     hintPartialEl.textContent = currentPartial || '';
     hintPartialEl.style.display = currentPartial ? 'block' : 'none';
   }
-  // Hide hint button if no hint available
   if (hintBtn) hintBtn.style.display = currentHint ? '' : 'none';
-  // Restore any saved progress for this puzzle
+
   restoreGameState();
+  updateShareButtonVisibility();
+  updateDailyProgressPanel();
 }
 
 function buildBoard() {
@@ -3123,6 +3379,7 @@ function closeHelp() { document.getElementById('help-overlay').classList.remove(
 // ─────────────────────────────────────────
 function closeEndOverlay() {
   document.getElementById('end-overlay').classList.remove('show');
+  updateDailyProgressPanel();
 }
 
 // ─────────────────────────────────────────
