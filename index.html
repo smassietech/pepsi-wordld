@@ -2950,7 +2950,7 @@ async function updateDailyLeaderboardSnapshot(showSnapshot) {
     return;
   }
 
-  list.innerHTML = '<div class="daily-leaderboard-empty">Loading today's scores…</div>';
+  list.innerHTML = "<div class=\"daily-leaderboard-empty\">Loading today's scores…</div>";
   sub.textContent = 'Loading…';
   snapshot.classList.add('show');
   const data = await loadDailyScoresSnapshot();
