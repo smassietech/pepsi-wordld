@@ -119,16 +119,6 @@
     color: var(--pepsi-red);
   }
 
-  .game-subtitle {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: 0.68rem;
-    letter-spacing: 0.22em;
-    color: rgba(255,255,255,0.6);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
   .divider {
     width: 100%;
     height: 1px;
@@ -715,7 +705,6 @@
     header { padding: 6px 16px 4px; }
     .game-title { font-size: clamp(1.4rem, 5vw, 2rem); }
     .pepsi-globe { width: 28px; height: 28px; }
-    .game-subtitle { font-size: 0.58rem; margin-bottom: 2px; }
     .stats-bar { gap: 16px; padding: 2px 0 0; }
     .stat-num { font-size: 1.1rem; }
     .stat-label { font-size: 0.5rem; }
@@ -726,7 +715,6 @@
     .wod-badge { font-size: 0.6rem; padding: 3px 10px; margin-bottom: 2px; }
   }
   @media (max-height: 600px) {
-    .game-subtitle { display: none; }
     .stats-bar { display: none; }
     .divider { display: none; }
     header { padding: 4px 16px 2px; }
@@ -1307,7 +1295,6 @@
     <img class="pepsi-globe" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png" alt="Pepsi" />
     <h1 class="game-title">PEPSI <span>WORDL'D</span></h1>
   </div>
-  <p class="game-subtitle">The Official Conference Challenge</p>
   <div class="wod-badge" id="wod-badge">⚡ Puzzle <span id="puzzle-num-display">#1</span> Active</div>
   <div class="divider" style="margin-top:10px;"></div>
   <div class="stats-bar">
