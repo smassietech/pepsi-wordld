@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>PEPSI WORDL'D — Control Conference '26</title>
+<title>PEPSI WORDL'D — Global Control Conference Game</title>
 <link id="site-favicon" rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="shortcut icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
@@ -2887,6 +2887,11 @@ function getCompletedPuzzleCount() {
     completed = Math.max(completed, 1);
   }
   return completed;
+}
+
+function getNextPuzzleInSet() {
+  if (!todaysPuzzleSet || !todaysPuzzleSet.length) return null;
+  return todaysPuzzleSet.find(p => !isPuzzleCompleted(p)) || null;
 }
 
 function getCurrentDatePuzzleKeys() {
