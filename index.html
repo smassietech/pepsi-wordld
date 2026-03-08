@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>PEPSI WORDL'D — Global Control Conference Game</title>
+<title>PEPSI WORDL'D — The Official Conference Game</title>
 <link id="site-favicon" rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="shortcut icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
 <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1280px-Pepsi_2023.svg.png">
@@ -377,6 +377,88 @@
   }
   .daily-progress-btn[hidden] {
     display: none !important;
+  }
+
+  .daily-leaderboard-snapshot {
+    display: none;
+    margin-top: 12px;
+    background: rgba(255,255,255,0.96);
+    border-radius: 18px;
+    padding: 16px 16px 12px;
+    box-shadow: 0 14px 32px rgba(0,0,0,0.18);
+    border: 1px solid rgba(255,255,255,0.7);
+  }
+  .daily-leaderboard-snapshot.show {
+    display: block;
+  }
+  .daily-leaderboard-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .daily-leaderboard-title {
+    font-family: 'PepsiOwners', 'Bebas Neue', cursive;
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    color: var(--pepsi-blue);
+    line-height: 1;
+  }
+  .daily-leaderboard-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #718096;
+    white-space: nowrap;
+  }
+  .daily-leaderboard-list {
+    display: grid;
+    gap: 8px;
+  }
+  .daily-leaderboard-row {
+    display: grid;
+    grid-template-columns: 34px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    background: rgba(239,244,248,0.92);
+    border: 1px solid rgba(203,213,224,0.9);
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .daily-leaderboard-rank {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--pepsi-red);
+    text-align: center;
+  }
+  .daily-leaderboard-name {
+    min-width: 0;
+    font-weight: 700;
+    color: #1a202c;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .daily-leaderboard-metric {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #4a5568;
+    white-space: nowrap;
+  }
+  .daily-leaderboard-empty {
+    background: rgba(239,244,248,0.92);
+    border: 1px dashed rgba(160,174,192,0.95);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+    color: #718096;
+    font-size: 0.95rem;
   }
 
   .kb-row {
