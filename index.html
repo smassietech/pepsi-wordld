@@ -3505,6 +3505,21 @@ const FIREBASE_URL = 'https://pepsi-wordld-default-rtdb.firebaseio.com/';
 
 let myLeaderboardEntry = null;
 
+function getStoredPlayerName() {
+  try {
+    return localStorage.getItem('pepsiwordle_playername') || sessionStorage.getItem('pepsiwordle_playername') || '';
+  } catch (e) {
+    try { return sessionStorage.getItem('pepsiwordle_playername') || ''; } catch(err) { return ''; }
+  }
+}
+
+function storePlayerName(name) {
+  const clean = (name || '').trim().slice(0, 20);
+  try { localStorage.setItem('pepsiwordle_playername', clean); } catch (e) {}
+  try { sessionStorage.setItem('pepsiwordle_playername', clean); } catch (e) {}
+  return clean;
+}
+
 function fbPath() {
   // Each puzzle gets its own node: /scores/puzzle-1/
   return FIREBASE_URL + 'scores/puzzle-' + puzzleNumber + '/';
@@ -3670,7 +3685,7 @@ function renderOverallLeaderboard(allScores) {
   const rankIcons = ['🥇','🥈','🥉'];
   const rankClass = ['gold','silver','bronze'];
 
-  const savedName = (sessionStorage.getItem('pepsiwordle_playername') || '').toLowerCase();
+  const savedName = getStoredPlayerName().toLowerCase();
 
   let rows = sorted.map((p, i) => {
     const isMe = savedName && p.name.toLowerCase() === savedName;
@@ -3755,20 +3770,23 @@ function closeLeaderboard() {
 
 // Called after game ends — shows name prompt
 function promptForLeaderboard(won) {
-  const savedName = sessionStorage.getItem('pepsiwordle_playername') || '';
+  const savedName = getStoredPlayerName();
   document.getElementById('name-prompt-emoji-img').src = PEPSI_CAN_SRC; document.getElementById('name-prompt-emoji-img').style.filter = won ? 'none' : 'grayscale(60%)';
   document.getElementById('name-prompt-num').textContent = puzzleNumber;
   document.getElementById('name-input').value = savedName;
+  const btn = document.querySelector('.name-submit-btn');
+  if (btn) btn.disabled = false;
   document.getElementById('name-prompt').classList.add('show');
   setTimeout(() => document.getElementById('name-input').focus(), 300);
 }
 
 async function submitToLeaderboard() {
   const nameInput = document.getElementById('name-input');
-  const name = nameInput.value.trim();
-  if (!name) { nameInput.focus(); return; }
+  const rawName = nameInput.value.trim();
+  if (!rawName) { nameInput.focus(); return; }
 
-  sessionStorage.setItem('pepsiwordle_playername', name);
+  const name = storePlayerName(rawName);
+  nameInput.value = name;
   document.getElementById('name-prompt').classList.remove('show');
 
   const won = guesses.length > 0 && guesses[guesses.length-1].result.every(r => r === 'correct');
@@ -3780,11 +3798,14 @@ async function submitToLeaderboard() {
     showToast('Score posted! 🏆');
     setTimeout(() => showLeaderboard(), 600);
   } else {
+    if (btn) btn.disabled = false;
     showToast('Could not save score — no storage available');
   }
 }
 
 function skipLeaderboard() {
+  const btn = document.querySelector('.name-submit-btn');
+  if (btn) btn.disabled = false;
   document.getElementById('name-prompt').classList.remove('show');
 }
 
