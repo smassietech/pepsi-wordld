@@ -34,12 +34,13 @@
 
   body {
     background: linear-gradient(160deg, #000000 0%, #0E0E96 45%, #0025FF 100%);
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
     font-family: 'Barlow', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
   }
 
@@ -79,33 +80,34 @@
   header {
     width: 100%;
     max-width: 500px;
-    padding: 18px 20px 12px;
+    padding: 10px 20px 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
     z-index: 10;
+    flex-shrink: 0;
   }
 
   .pepsi-logo-area {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 4px;
+    gap: 10px;
+    margin-bottom: 2px;
     flex-wrap: nowrap;
     width: 100%;
     justify-content: center;
   }
 
   .pepsi-globe {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
   }
 
   .game-title {
     font-family: 'PepsiOwners', 'Bebas Neue', cursive;
-    font-size: clamp(1.8rem, 7vw, 3.2rem);
+    font-size: clamp(1.6rem, 6vw, 2.6rem);
     letter-spacing: 0.03em;
     color: white;
     line-height: 1;
@@ -120,26 +122,26 @@
   .game-subtitle {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
-    font-size: 0.78rem;
+    font-size: 0.68rem;
     letter-spacing: 0.22em;
     color: rgba(255,255,255,0.6);
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
   }
 
   .divider {
     width: 100%;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   /* --- STATS BAR --- */
   .stats-bar {
     display: flex;
-    gap: 24px;
-    padding: 8px 0 0;
-    margin-bottom: 2px;
+    gap: 20px;
+    padding: 4px 0 0;
+    margin-bottom: 0;
   }
   .stat {
     text-align: center;
@@ -147,12 +149,12 @@
   }
   .stat-num {
     font-family: 'PepsiOwners', 'Bebas Neue', cursive;
-    font-size: 1.6rem;
+    font-size: 1.3rem;
     line-height: 1;
     color: white;
   }
   .stat-label {
-    font-size: 0.62rem;
+    font-size: 0.56rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.5);
@@ -188,37 +190,45 @@
   /* --- GAME BOARD --- */
   #board-container {
     width: 100%;
-    max-width: 360px;
-    padding: 16px 0 8px;
+    max-width: 500px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
     position: relative;
     z-index: 10;
+    min-height: 0;
   }
 
   #board {
     display: grid;
     grid-template-rows: repeat(6, 1fr);
-    gap: 6px;
-    padding: 0 20px;
+    gap: 5px;
+    width: min(330px, 58vh, calc(100vw - 40px));
+    height: min(396px, 68vh, calc((100vw - 40px) * 1.2));
+    max-width: 350px;
+    max-height: 420px;
   }
 
   .row {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
+    gap: 5px;
   }
 
   .tile {
     width: 100%;
-    aspect-ratio: 1;
+    height: 100%;
     border: 2px solid var(--tile-border);
     background: rgba(255,255,255,0.97);
-    border-radius: 6px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
-    font-size: 2rem;
+    font-size: clamp(1.2rem, 4.5vw, 2rem);
     color: var(--text-dark);
     transition: border-color 0.1s;
     position: relative;
@@ -276,43 +286,44 @@
   /* --- KEYBOARD --- */
   #keyboard {
     width: 100%;
-    max-width: 500px;
-    padding: 8px 12px 24px;
+    max-width: 484px;
+    padding: 4px 8px 10px;
     position: relative;
     z-index: 10;
+    flex-shrink: 0;
   }
 
   .kb-row {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    margin-bottom: 5px;
+    gap: 4px;
+    margin-bottom: 4px;
   }
 
   .key {
-    height: 56px;
-    min-width: 38px;
-    padding: 0 6px;
-    border-radius: 6px;
+    height: 50px;
+    min-width: 28px;
+    padding: 0 4px;
+    border-radius: 5px;
     border: none;
     background: rgba(255,255,255,0.92);
     color: var(--text-dark);
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
+    font-size: 0.88rem;
+    letter-spacing: 0.03em;
     cursor: pointer;
     transition: transform 0.08s, background 0.3s, color 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
     flex: 1;
-    max-width: 42px;
+    max-width: 36px;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .key.wide { max-width: 60px; font-size: 0.75rem; }
+  .key.wide { max-width: 52px; font-size: 0.7rem; }
 
   .key:active { transform: scale(0.92); }
 
@@ -640,19 +651,19 @@
   /* Header buttons */
   .header-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-top: 4px;
   }
 
   .icon-btn {
     background: rgba(255,255,255,0.12);
     border: 1px solid rgba(255,255,255,0.2);
     color: rgba(255,255,255,0.8);
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -701,14 +712,41 @@
 
   /* Responsive */
   @media (max-height: 700px) {
-    .tile { font-size: 1.6rem; }
-    .key  { height: 48px; }
-    header { padding: 10px 20px 6px; }
-    .game-title { font-size: 2.6rem; }
+    header { padding: 6px 16px 4px; }
+    .game-title { font-size: clamp(1.4rem, 5vw, 2rem); }
+    .pepsi-globe { width: 28px; height: 28px; }
+    .game-subtitle { font-size: 0.58rem; margin-bottom: 2px; }
+    .stats-bar { gap: 16px; padding: 2px 0 0; }
+    .stat-num { font-size: 1.1rem; }
+    .stat-label { font-size: 0.5rem; }
+    .tile { font-size: clamp(1rem, 3.5vw, 1.5rem); }
+    .key { height: 42px; }
+    .key.wide { font-size: 0.65rem; }
+    #keyboard { padding: 2px 8px 6px; }
+    .wod-badge { font-size: 0.6rem; padding: 3px 10px; margin-bottom: 2px; }
+  }
+  @media (max-height: 600px) {
+    .game-subtitle { display: none; }
+    .stats-bar { display: none; }
+    .divider { display: none; }
+    header { padding: 4px 16px 2px; }
+    .key { height: 38px; }
+    #keyboard { padding: 2px 6px 4px; }
   }
   @media (max-width: 380px) {
-    .key { min-width: 30px; font-size: 0.85rem; }
-    .tile { font-size: 1.5rem; }
+    .key { min-width: 24px; font-size: 0.78rem; }
+    .key.wide { min-width: 36px; font-size: 0.62rem; }
+    #keyboard { padding: 2px 4px 8px; }
+    .kb-row { gap: 3px; }
+  }
+  /* Tall narrow phones */
+  @media (min-height: 800px) and (max-width: 430px) {
+    #board { width: min(300px, calc(100vw - 48px)); height: min(360px, 52vh); }
+    .key { height: 46px; }
+  }
+  /* Safe area for notched phones */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    #keyboard { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
   }
 
   /* Word-of-day badge */
