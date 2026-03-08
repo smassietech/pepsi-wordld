@@ -4082,7 +4082,6 @@ async function submitToLeaderboard() {
 
   const name = storePlayerName(rawName);
   nameInput.value = name;
-  document.getElementById('name-prompt').classList.remove('show');
 
   const won = guesses.length > 0 && guesses[guesses.length-1].result.every(r => r === 'correct');
   const btn = document.querySelector('.name-submit-btn');
@@ -4091,8 +4090,13 @@ async function submitToLeaderboard() {
   const ok = await saveScore(name, won, guesses.length);
   if (ok) {
     saveGameState();
+    document.getElementById('name-prompt').classList.remove('show');
+
+    const endOverlay = document.getElementById('end-overlay');
+    if (endOverlay) endOverlay.classList.add('show');
+
     showToast('Score posted! 🏆');
-    transitionToPostPuzzleState();
+
     if (getCompletedPuzzleCount() >= getDailyPuzzleCount()) {
       updateDailyLeaderboardSnapshot(true);
     }
