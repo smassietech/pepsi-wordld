@@ -217,13 +217,11 @@
   }
 
   #board {
-    display: grid;
-    grid-template-rows: repeat(6, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 5px;
-    width: min(330px, 58vh, calc(100vw - 40px));
-    height: min(396px, 68vh, calc((100vw - 40px) * 1.2));
-    max-width: 350px;
-    max-height: 420px;
+    width: min(330px, 90vw, calc(100vw - 40px));
+    max-width: 340px;
   }
 
   .row {
@@ -234,7 +232,7 @@
 
   .tile {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1 / 1;
     border: 2px solid var(--tile-border);
     background: rgba(255,255,255,0.97);
     border-radius: 5px;
@@ -944,7 +942,7 @@
 
   /* Tall narrow phones */
   @media (min-height: 800px) and (max-width: 430px) {
-    #board { width: min(300px, calc(100vw - 48px)); height: min(360px, 52vh); }
+    #board { width: min(300px, calc(100vw - 48px)); }
     .key { height: 50px; }
   }
   /* Safe area for notched phones */
@@ -1603,7 +1601,6 @@
     }
     #board {
       width: min(300px, calc(100vw - 44px));
-      height: min(360px, calc((100vw - 44px) * 1.2));
     }
     #keyboard,
     .daily-progress-panel {
@@ -4159,15 +4156,15 @@ async function submitToLeaderboard() {
   if (ok) {
     saveGameState();
     document.getElementById('name-prompt').classList.remove('show');
+    setTimeout(() => updateDailyProgressPanel(), 600);
 
     const endOverlay = document.getElementById('end-overlay');
     if (endOverlay) endOverlay.classList.add('show');
 
     showToast('Score posted! 🏆');
 
-    if (getCompletedPuzzleCount() >= getDailyPuzzleCount()) {
-      updateDailyLeaderboardSnapshot(true);
-    }
+    // Show daily progress panel (replaces keyboard; shows "Play Next" or "All Done" + leaderboard)
+    setTimeout(() => updateDailyProgressPanel(), 600);
   } else {
     if (btn) btn.disabled = false;
     showToast('Could not save score — no storage available');
