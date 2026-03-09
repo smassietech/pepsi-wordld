@@ -93,7 +93,10 @@
   #app-shell {
     width: 100%;
     max-width: 100vw;
-    min-height: 100dvh;
+    /* Must match body exactly so flex:1 on board-container works correctly */
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -220,7 +223,10 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    width: min(330px, 90vw, calc(100vw - 40px));
+    /* Last term: height-aware cap so board never taller than available space.
+       Available ≈ 100dvh − header(~140px) − keyboard(~190px) − padding(~30px)
+       Board height = width × 1.2 (6 square tiles), so width ≤ available × (5/6) */
+    width: min(330px, 90vw, calc(100vw - 40px), calc((100dvh - 360px) * 0.833));
     max-width: 340px;
   }
 
@@ -904,6 +910,10 @@
     .stat-num { font-size: 1.1rem; }
     .stat-label { font-size: 0.5rem; }
     .tile { font-size: clamp(1.4rem, 4.6vw, 2rem); }
+    #board {
+      /* max-height:700px: available ≈ dvh−110(hdr)−172(keys)−16(pad) = dvh−298px */
+      width: min(310px, calc(100vw - 44px), calc((100dvh - 298px) * 0.833));
+    }
     .key { height: 46px; font-size: 0.98rem; }
     .key.wide { font-size: 0.8rem; }
     #board-container { padding-bottom: 16px; }
@@ -924,6 +934,11 @@
     .daily-progress-text { font-size: 0.94rem; }
     .daily-leaderboard-row { grid-template-columns: 32px 1fr auto; }
     .daily-leaderboard-metric:last-child { display: none; }
+    #board {
+      /* max-height:600px (iPhone SE, small Androids):
+         available ≈ dvh−84(hdr)−148(keys)−16(pad) = dvh−248px */
+      width: min(280px, calc(100vw - 44px), calc((100dvh - 252px) * 0.833));
+    }
   }
   @media (max-width: 380px) {
     .key { min-width: 0; font-size: 0.92rem; }
@@ -1208,22 +1223,27 @@
     background: rgba(0,10,30,0.88);
     backdrop-filter: blur(8px);
     z-index: 560;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 16px;
+    overflow-y: auto;
   }
   #name-prompt.show { display: flex; }
 
   .name-card {
     background: white;
     border-radius: 20px;
-    padding: 32px 28px;
+    padding: 20px 24px 16px;
     max-width: 340px;
     width: 100%;
     text-align: center;
     animation: cardIn 0.35s cubic-bezier(.22,.68,0,1.2) forwards;
     position: relative;
     overflow: hidden;
+    /* Scrollable so skip button always reachable on small/keyboard-open screens */
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .name-card::before {
     content: '';
@@ -1233,7 +1253,7 @@
     background: linear-gradient(90deg, var(--pepsi-blue), var(--pepsi-red));
     border-radius: 20px 20px 0 0;
   }
-  .name-emoji { font-size: 2.8rem; margin-bottom: 8px; }
+  .name-emoji { font-size: 2.8rem; margin-bottom: 4px; }
   .name-title {
     font-family: 'PepsiOwners', 'Bebas Neue', cursive;
     font-size: 1.8rem;
@@ -1594,13 +1614,15 @@
       padding-top: 0;
     }
     #board-container {
-      flex: 0 0 auto;
-      align-items: flex-start;
+      flex: 1;
+      min-height: 0;
+      align-items: center;
       justify-content: center;
       padding: 6px 0 10px;
     }
     #board {
-      width: min(300px, calc(100vw - 44px));
+      /* Available ≈ 100dvh − 140px(hdr) − 186px(keys) − 16px(padding) = dvh−342px */
+      width: min(300px, calc(100vw - 44px), calc((100dvh - 342px) * 0.833));
     }
     #keyboard,
     .daily-progress-panel {
@@ -1618,6 +1640,54 @@
     body {
       overflow: hidden;
     }
+  }
+
+
+  /* Name prompt — returning player / status */
+  .name-returning-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--pepsi-blue);
+    background: rgba(0,37,255,0.07);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .name-returning-tag strong { color: var(--pepsi-blue-dark); }
+  .name-change-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0 0 12px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    transition: color 0.2s;
+  }
+  .name-change-btn:hover { color: #666; }
+  .name-status {
+    min-height: 20px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 6px;
+    transition: color 0.2s;
+  }
+  .name-puzzle-line {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #ccc;
+    margin-top: 10px;
   }
 
 </style>
@@ -2952,6 +3022,7 @@ let board = [];
 let keyStates = {};
 let stats = { played: 0, wins: 0, streak: 0, best: 0 };
 let guesses = [];
+let scorePostedForCurrentPuzzle = false;  // prevents re-prompting after successful post
 
 // ─────────────────────────────────────────
 // GAME STATE PERSISTENCE (per puzzle)
@@ -3180,6 +3251,7 @@ function resetCurrentPuzzleView() {
   board = [];
   keyStates = {};
   guesses = [];
+  scorePostedForCurrentPuzzle = false;
   buildBoard();
   buildKeyboard();
   document.getElementById('end-overlay')?.classList.remove('show');
@@ -3514,7 +3586,9 @@ function onWin() {
     document.getElementById('end-title').textContent = msg;
     document.getElementById('end-word').innerHTML = `The word was <strong>${targetWord}</strong>`;
     document.getElementById('end-overlay').classList.add('show');
-    setTimeout(() => promptForLeaderboard(true), 800);
+    if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) {
+      setTimeout(() => promptForLeaderboard(true), 800);
+    }
   }, COLS * 350 + 600);
 }
 
@@ -3530,7 +3604,7 @@ function onLose() {
     document.getElementById('end-emoji-img').src = PEPSI_CAN_SRC; document.getElementById('end-emoji-img').style.filter='grayscale(60%)';
     document.getElementById('end-title').textContent = 'SO CLOSE!';
     document.getElementById('end-word').innerHTML = `The word was <strong>${targetWord}</strong>`;
-    setTimeout(() => { document.getElementById('end-overlay').classList.add('show'); setTimeout(() => promptForLeaderboard(false), 800); }, 1500);
+    setTimeout(() => { document.getElementById('end-overlay').classList.add('show'); if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) { setTimeout(() => promptForLeaderboard(false), 800); } }, 1500);
   }, 400);
 }
 
@@ -4131,43 +4205,89 @@ function closeLeaderboard() {
 // Called after game ends — shows name prompt
 function promptForLeaderboard(won) {
   const savedName = getStoredPlayerName();
-  document.getElementById('name-prompt-emoji-img').src = PEPSI_CAN_SRC; document.getElementById('name-prompt-emoji-img').style.filter = won ? 'none' : 'grayscale(60%)';
+
+  // Image
+  document.getElementById('name-prompt-emoji-img').src = PEPSI_CAN_SRC;
+  document.getElementById('name-prompt-emoji-img').style.filter = won ? 'none' : 'grayscale(60%)';
   document.getElementById('name-prompt-num').textContent = puzzleNumber;
-  document.getElementById('name-input').value = savedName;
-  const btn = document.querySelector('.name-submit-btn');
+
+  const status   = document.getElementById('name-status');
+  const returning = document.getElementById('name-returning');
+  const inputWrap = document.getElementById('name-input-wrap');
+  const title    = document.getElementById('name-prompt-title');
+  const sub      = document.getElementById('name-prompt-sub');
+  const btn      = document.querySelector('.name-submit-btn');
+  if (status) status.textContent = '';
   if (btn) btn.disabled = false;
+
+  if (savedName) {
+    // Returning player — show name, hide input
+    document.getElementById('name-returning-name').textContent = savedName;
+    if (returning) returning.style.display = '';
+    if (inputWrap) inputWrap.style.display = 'none';
+    if (title) title.textContent = 'Post Your Score';
+    if (sub) sub.textContent = 'Tap below to confirm — or skip to just see results.';
+  } else {
+    // New player
+    if (returning) returning.style.display = 'none';
+    if (inputWrap) inputWrap.style.display = '';
+    document.getElementById('name-input').value = '';
+    if (title) title.textContent = 'Add to Leaderboard';
+    if (sub) sub.textContent = "Pick a name — you'll use it every time. Names are unique, first come first served.";
+  }
+
   document.getElementById('name-prompt').classList.add('show');
-  setTimeout(() => document.getElementById('name-input').focus(), 300);
+  if (!savedName) setTimeout(() => document.getElementById('name-input').focus(), 300);
 }
 
 async function submitToLeaderboard() {
-  const nameInput = document.getElementById('name-input');
-  const rawName = nameInput.value.trim();
-  if (!rawName) { nameInput.focus(); return; }
+  const inputWrap  = document.getElementById('name-input-wrap');
+  const isReturning = inputWrap && inputWrap.style.display === 'none';
+  const rawName = isReturning
+    ? getStoredPlayerName()
+    : (document.getElementById('name-input')?.value.trim() || '');
 
+  if (!rawName) {
+    document.getElementById('name-input')?.focus();
+    return;
+  }
+
+  const btn    = document.querySelector('.name-submit-btn');
+  const status = document.getElementById('name-status');
+  if (btn) btn.disabled = true;
+  if (status) { status.textContent = 'Checking…'; status.style.color = '#999'; }
+
+  // Check / claim the name in Firebase registry
+  const claim = await claimPlayerName(rawName);
+  if (!claim.ok) {
+    // Name taken — show error, let them try another
+    if (status) { status.textContent = claim.error; status.style.color = 'var(--pepsi-red)'; }
+    if (btn) btn.disabled = false;
+    // Switch to input mode so they can type a new name
+    if (inputWrap) inputWrap.style.display = '';
+    document.getElementById('name-returning')?.style && (document.getElementById('name-returning').style.display = 'none');
+    const input = document.getElementById('name-input');
+    if (input) { input.value = rawName; setTimeout(() => input.focus(), 50); }
+    return;
+  }
+
+  if (status) status.textContent = '';
   const name = storePlayerName(rawName);
-  nameInput.value = name;
 
   const won = guesses.length > 0 && guesses[guesses.length-1].result.every(r => r === 'correct');
-  const btn = document.querySelector('.name-submit-btn');
-  if (btn) btn.disabled = true;
+  const ok  = await saveScore(name, won, guesses.length);
 
-  const ok = await saveScore(name, won, guesses.length);
   if (ok) {
+    scorePostedForCurrentPuzzle = true;
     saveGameState();
     document.getElementById('name-prompt').classList.remove('show');
-    setTimeout(() => updateDailyProgressPanel(), 600);
-
-    const endOverlay = document.getElementById('end-overlay');
-    if (endOverlay) endOverlay.classList.add('show');
-
+    document.getElementById('end-overlay')?.classList.add('show');
     showToast('Score posted! 🏆');
-
-    // Show daily progress panel (replaces keyboard; shows "Play Next" or "All Done" + leaderboard)
     setTimeout(() => updateDailyProgressPanel(), 600);
   } else {
     if (btn) btn.disabled = false;
-    showToast('Could not save score — no storage available');
+    if (status) { status.textContent = ''; }
+    showToast('Could not save score — check connection');
   }
 }
 
@@ -4304,17 +4424,106 @@ function closeHintOnOutsideClick(e) {
   }, { passive: false });
 })();
 
+
+// ─────────────────────────────────────────
+// DEVICE IDENTITY & NAME REGISTRY
+// ─────────────────────────────────────────
+
+function getOrCreateDeviceToken() {
+  try {
+    let t = localStorage.getItem('pepsiwordle_device_id');
+    if (!t) {
+      t = 'dv_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('pepsiwordle_device_id', t);
+    }
+    return t;
+  } catch(e) {
+    return 'dv_' + Date.now().toString(36);
+  }
+}
+
+function normalizeRegistryName(name) {
+  // Lowercase, spaces→underscore, strip non-alphanum/underscore
+  return (name || '').trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+}
+
+function fbRegistryPath(name) {
+  return FIREBASE_URL + 'registry/' + normalizeRegistryName(name) + '.json';
+}
+
+async function claimPlayerName(name) {
+  if (!isFirebaseConfigured()) return { ok: true };  // offline — skip check
+  const normalized = normalizeRegistryName(name);
+  if (!normalized) return { ok: false, error: 'Please enter a valid name (letters and numbers only)' };
+
+  const token = getOrCreateDeviceToken();
+  try {
+    const res = await fetch(fbRegistryPath(name));
+    if (res.ok) {
+      const existing = await res.json();
+      if (existing && existing.token) {
+        if (existing.token === token) return { ok: true };  // their name
+        return { ok: false, error: 'That name is already taken — please choose another' };
+      }
+    }
+    // Name is free — claim it
+    const writeRes = await fetch(fbRegistryPath(name), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, displayName: name.trim().slice(0, 20), claimedAt: Date.now() })
+    });
+    if (!writeRes.ok) throw new Error('Registry write failed: ' + writeRes.status);
+    return { ok: true };
+  } catch(e) {
+    // Network error — don't block posting
+    console.warn('Name registry check failed (proceeding anyway):', e);
+    return { ok: true };
+  }
+}
+
+// ─────────────────────────────────────────
+// NAME PROMPT UI HELPERS
+// ─────────────────────────────────────────
+
+function showNameChangeMode() {
+  document.getElementById('name-returning').style.display = 'none';
+  document.getElementById('name-input-wrap').style.display = '';
+  const input = document.getElementById('name-input');
+  input.value = getStoredPlayerName();
+  input.select();
+  const status = document.getElementById('name-status');
+  if (status) status.textContent = '';
+  setTimeout(() => input.focus(), 50);
+}
+
+function skipLeaderboard() {
+  scorePostedForCurrentPuzzle = true;  // treat skip as "handled" — don't re-prompt
+  document.getElementById('name-prompt').classList.remove('show');
+  document.getElementById('end-overlay')?.classList.add('show');
+  setTimeout(() => updateDailyProgressPanel(), 600);
+}
 </script>
 
 <!-- NAME PROMPT -->
 <div id="name-prompt">
   <div class="name-card">
-    <div class="name-emoji" id="name-prompt-emoji"><img id="name-prompt-emoji-img" src="" alt="" style="width:72px;height:72px;object-fit:contain;" /></div>
-    <div class="name-title">Add to Leaderboard</div>
-    <p class="name-sub">Enter your name to post your score to the Puzzle #<span id="name-prompt-num">1</span> leaderboard. Posting is required to continue.</p>
-    <input class="name-input-big" id="name-input" maxlength="20" placeholder="Your name" autocomplete="off" spellcheck="false"
-      onkeydown="if(event.key==='Enter')submitToLeaderboard()" />
+    <div class="name-emoji" id="name-prompt-emoji"><img id="name-prompt-emoji-img" src="" alt="" style="width:56px;height:56px;object-fit:contain;" /></div>
+    <div class="name-title" id="name-prompt-title">Add to Leaderboard</div>
+    <p class="name-sub" id="name-prompt-sub">Pick a name for the leaderboard — you'll use it every time.</p>
+    <!-- Returning player view -->
+    <div id="name-returning" style="display:none">
+      <div class="name-returning-tag">Posting as <strong id="name-returning-name"></strong></div>
+      <button class="name-change-btn" onclick="showNameChangeMode()">Use a different name</button>
+    </div>
+    <!-- Input (new players / change mode) -->
+    <div id="name-input-wrap">
+      <input class="name-input-big" id="name-input" maxlength="20" placeholder="Your name" autocomplete="off" spellcheck="false"
+        onkeydown="if(event.key==='Enter')submitToLeaderboard()" />
+    </div>
+    <div class="name-status" id="name-status"></div>
     <button class="name-submit-btn" onclick="submitToLeaderboard()">Post My Score 🏆</button>
+    <button class="name-skip-btn" onclick="skipLeaderboard()">Skip — don't post</button>
+    <div class="name-puzzle-line">Puzzle #<span id="name-prompt-num">1</span></div>
   </div>
 </div>
 
