@@ -1944,13 +1944,6 @@
     <div class="daily-progress-text" id="daily-progress-text">You've completed 1 out of 3 puzzles available today.</div>
     <button id="daily-progress-next-btn" class="daily-progress-btn" onclick="playNextPuzzle()">Play Next Puzzle</button>
   </div>
-  <div id="daily-leaderboard-snapshot" class="daily-leaderboard-snapshot" aria-live="polite">
-    <div class="daily-leaderboard-head">
-      <div class="daily-leaderboard-title">Today's Leaderboard</div>
-      <div id="daily-leaderboard-sub" class="daily-leaderboard-sub">Loading…</div>
-    </div>
-    <div id="daily-leaderboard-list" class="daily-leaderboard-list"></div>
-  </div>
 </div>
 
 <!-- END OVERLAY -->
@@ -4895,6 +4888,7 @@ function closeLeaderboard() {
 
 // Called after game ends — shows name prompt
 function promptForLeaderboard(won) {
+  document.getElementById('end-overlay')?.classList.remove('show');
   const savedName = getStoredPlayerName();
 
   // Image
