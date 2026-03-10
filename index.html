@@ -4233,7 +4233,7 @@ function promptForLeaderboard(won) {
     if (inputWrap) inputWrap.style.display = '';
     document.getElementById('name-input').value = '';
     if (title) title.textContent = 'Add to Leaderboard';
-    if (sub) sub.textContent = "Pick a name — you'll use it every time. Names are unique, first come first served.";
+    if (sub) sub.textContent = "Min. 3 characters — e.g. 'Sarah M'. You'll use it every time. First come, first served.";
   }
 
   document.getElementById('name-prompt').classList.add('show');
@@ -4248,6 +4248,12 @@ async function submitToLeaderboard() {
     : (document.getElementById('name-input')?.value.trim() || '');
 
   if (!rawName) {
+    document.getElementById('name-input')?.focus();
+    return;
+  }
+  if (rawName.length < 3) {
+    const status = document.getElementById('name-status');
+    if (status) { status.textContent = 'Name must be at least 3 characters'; status.style.color = 'var(--pepsi-red)'; }
     document.getElementById('name-input')?.focus();
     return;
   }
@@ -4454,7 +4460,7 @@ function fbRegistryPath(name) {
 async function claimPlayerName(name) {
   if (!isFirebaseConfigured()) return { ok: true };  // offline — skip check
   const normalized = normalizeRegistryName(name);
-  if (!normalized) return { ok: false, error: 'Please enter a valid name (letters and numbers only)' };
+  if (!normalized || normalized.length < 3) return { ok: false, error: 'Name must be at least 3 characters (letters and numbers only)' };
 
   const token = getOrCreateDeviceToken();
   try {
@@ -4517,7 +4523,7 @@ function skipLeaderboard() {
     </div>
     <!-- Input (new players / change mode) -->
     <div id="name-input-wrap">
-      <input class="name-input-big" id="name-input" maxlength="20" placeholder="Your name" autocomplete="off" spellcheck="false"
+      <input class="name-input-big" id="name-input" maxlength="20" placeholder="e.g. Sarah M" autocomplete="off" spellcheck="false"
         onkeydown="if(event.key==='Enter')submitToLeaderboard()" />
     </div>
     <div class="name-status" id="name-status"></div>
