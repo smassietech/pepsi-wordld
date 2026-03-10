@@ -4942,6 +4942,13 @@ async function submitToLeaderboard() {
     return;
   }
 
+  if (rawName.length < 3) {
+    const status = document.getElementById('name-status');
+    if (status) { status.textContent = 'Name must be at least 3 characters.'; status.style.color = 'var(--pepsi-red)'; }
+    document.getElementById('name-input')?.focus();
+    return;
+  }
+
   const btn    = document.querySelector('.name-submit-btn');
   const status = document.getElementById('name-status');
   if (btn) btn.disabled = true;
@@ -5138,7 +5145,8 @@ function normalizeRegistryName(name) {
 }
 
 function fbRegistryPath(name) {
-  return FIREBASE_URL + 'registry/' + normalizeRegistryName(name) + '.json';
+  const url = window._firebaseUrl || FIREBASE_URL;
+  return url + 'registry/' + normalizeRegistryName(name) + '.json';
 }
 
 async function claimPlayerName(name) {
@@ -5147,14 +5155,30 @@ async function claimPlayerName(name) {
   if (!normalized) return { ok: false, error: 'Please enter a valid name (letters and numbers only)' };
 
   const token = getOrCreateDeviceToken();
+  // If this exact name is already stored on this device, allow reclaiming it
+  // (covers "new device" / "cleared browser data" scenario)
+  const storedName = getStoredPlayerName();
+  const isMyStoredName = storedName && normalizeRegistryName(storedName) === normalized;
+
   try {
     const res = await fetch(fbRegistryPath(name));
-    if (res.ok) {
-      const existing = await res.json();
-      if (existing && existing.token) {
-        if (existing.token === token) return { ok: true };  // their name
-        return { ok: false, error: 'That name is already taken — please choose another' };
+    if (!res.ok) {
+      return { ok: false, error: 'Could not reach leaderboard — check your connection and try again' };
+    }
+    const existing = await res.json();
+    if (existing && existing.token) {
+      if (existing.token === token) return { ok: true };  // same device, their name
+      if (isMyStoredName) {
+        // Their locally-stored name is registered to a different token (e.g. new device).
+        // Re-claim it by updating the token.
+        await fetch(fbRegistryPath(name), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, displayName: name.trim().slice(0, 20), claimedAt: existing.claimedAt || Date.now(), updatedAt: Date.now() })
+        });
+        return { ok: true };
       }
+      return { ok: false, error: 'That name is already taken — please choose another' };
     }
     // Name is free — claim it
     const writeRes = await fetch(fbRegistryPath(name), {
@@ -5165,9 +5189,8 @@ async function claimPlayerName(name) {
     if (!writeRes.ok) throw new Error('Registry write failed: ' + writeRes.status);
     return { ok: true };
   } catch(e) {
-    // Network error — don't block posting
-    console.warn('Name registry check failed (proceeding anyway):', e);
-    return { ok: true };
+    console.error('Name registry error:', e);
+    return { ok: false, error: 'Could not reach leaderboard — check your connection and try again' };
   }
 }
 
