@@ -1952,7 +1952,7 @@
     <div class="end-emoji" id="end-emoji"><img id="end-emoji-img" src="" alt="" style="height:80px;width:auto;max-width:140px;object-fit:contain;border-radius:8px;" /></div>
     <div class="end-title" id="end-title">NICE!</div>
     <div class="end-word" id="end-word"></div>
-    <button id="end-post-btn" class="share-btn" style="background:var(--correct);color:var(--correct-text)" onclick="promptForLeaderboard(true)">🏆 Post My Score</button>
+    <button id="end-post-btn" class="share-btn" style="background:var(--correct);color:var(--correct-text)" onclick="closeEndOverlay();showLeaderboard()">🏆 View Leaderboard</button>
     <button class="share-btn" onclick="shareResult()">📤 Share Result</button>
     <button class="share-btn" style="background:transparent;color:#888;border:1px solid #ddd;margin-bottom:0" onclick="closeEndOverlay()">Close</button>
   </div>
@@ -3820,10 +3820,8 @@ function onWin() {
     document.getElementById('end-title').textContent = msg;
     document.getElementById('end-word').innerHTML = `The word was <strong>${targetWord}</strong>`;
     document.getElementById('end-overlay').classList.add('show');
-    const postBtn = document.getElementById('end-post-btn');
-    if (postBtn) postBtn.style.display = scorePostedForCurrentPuzzle || !isFirebaseConfigured() ? 'none' : '';
     if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) {
-      setTimeout(() => promptForLeaderboard(true), 2000);
+      setTimeout(() => promptForLeaderboard(true), 800);
     }
   }, COLS * 350 + 600);
 }
@@ -3840,7 +3838,7 @@ function onLose() {
     document.getElementById('end-emoji-img').src = ACTIVE_CAN_SRC; document.getElementById('end-emoji-img').style.filter='grayscale(60%)';
     document.getElementById('end-title').textContent = 'SO CLOSE!';
     document.getElementById('end-word').innerHTML = `The word was <strong>${targetWord}</strong>`;
-    setTimeout(() => { document.getElementById('end-overlay').classList.add('show'); const postBtn = document.getElementById('end-post-btn'); if (postBtn) postBtn.style.display = scorePostedForCurrentPuzzle || !isFirebaseConfigured() ? 'none' : ''; if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) { setTimeout(() => promptForLeaderboard(false), 2000); } }, 1500);
+    setTimeout(() => { document.getElementById('end-overlay').classList.add('show'); if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) { setTimeout(() => promptForLeaderboard(false), 800); } }, 1500);
   }, 400);
 }
 
@@ -4890,8 +4888,6 @@ function closeLeaderboard() {
 
 // Called after game ends — shows name prompt
 function promptForLeaderboard(won) {
-  if (scorePostedForCurrentPuzzle) return;
-  document.getElementById('end-overlay')?.classList.remove('show');
   const savedName = getStoredPlayerName();
 
   // Image
@@ -4969,8 +4965,7 @@ async function submitToLeaderboard() {
     scorePostedForCurrentPuzzle = true;
     saveGameState();
     document.getElementById('name-prompt').classList.remove('show');
-    const postBtn = document.getElementById('end-post-btn');
-    if (postBtn) postBtn.style.display = 'none';
+    document.getElementById('end-overlay')?.classList.add('show');
     showToast('Score posted! 🏆');
     setTimeout(() => updateDailyProgressPanel(), 600);
   } else {
@@ -5188,8 +5183,7 @@ function showNameChangeMode() {
 function skipLeaderboard() {
   scorePostedForCurrentPuzzle = true;  // treat skip as "handled" — don't re-prompt
   document.getElementById('name-prompt').classList.remove('show');
-  const postBtn = document.getElementById('end-post-btn');
-  if (postBtn) postBtn.style.display = 'none';
+  document.getElementById('end-overlay')?.classList.add('show');
   setTimeout(() => updateDailyProgressPanel(), 600);
 }
 
