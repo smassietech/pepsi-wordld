@@ -2049,6 +2049,7 @@
       <div id="schedule-preview" style="max-height:180px;overflow-y:auto;font-size:0.75rem;color:#555;line-height:1.8;"></div>
     </div>
   </div>
+</div>
 
 <!-- LEADERBOARD OVERLAY -->
 <div id="leaderboard-overlay">
@@ -4471,7 +4472,7 @@ function buildThemePickerHTML() {
       ? '<div class="cb-badge">👁 Colourblind Safe</div>'
       : '';
     return `
-      <div class="theme-card${theme.id === savedId ? ' active' : ''}" data-theme-id="${theme.id}" onclick="applyTheme('${theme.id}')">
+      <div class="theme-card${theme.id === savedId ? ' active' : ''}" data-theme-id="${theme.id}" onclick="applyTheme('${theme.id}');closeThemePicker()">
         <div class="theme-card-check">✓</div>
         <div class="theme-card-banner" style="background:${theme.accentBar}">
           <img src="${theme.logo}" alt="${theme.logoAlt}" />
