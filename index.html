@@ -33,6 +33,10 @@
     --key-bg: #e8ecff;
     --key-text: #1a1a2e;
     --text-dark: #000000;        /* Black */
+    --header-text: rgba(255,255,255,0.9);
+    --header-text-muted: rgba(255,255,255,0.5);
+    --icon-btn-bg: rgba(255,255,255,0.12);
+    --icon-btn-border: rgba(255,255,255,0.2);
     --bg-gradient: linear-gradient(160deg, #000000 0%, #0E0E96 45%, #0025FF 100%);
   }
 
@@ -168,19 +172,19 @@
   }
   .stat {
     text-align: center;
-    color: rgba(255,255,255,0.8);
+    color: var(--header-text-muted);
   }
   .stat-num {
     font-family: 'PepsiOwners', 'Bebas Neue', cursive;
     font-size: 1.3rem;
     line-height: 1;
-    color: white;
+    color: var(--header-text);
   }
   .stat-label {
     font-size: 0.56rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
+    color: var(--header-text-muted);
   }
 
   /* --- TOAST NOTIFICATION --- */
@@ -835,9 +839,9 @@
   }
 
   .icon-btn {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.8);
+    background: var(--icon-btn-bg);
+    border: 1px solid var(--icon-btn-border);
+    color: var(--header-text);
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -849,7 +853,7 @@
     transition: background 0.2s, transform 0.1s;
   }
   .icon-btn:hover {
-    background: rgba(255,255,255,0.22);
+    background: var(--icon-btn-bg);
     transform: scale(1.08);
   }
 
@@ -4221,16 +4225,20 @@ const THEMES = [
       '--pepsi-red':       '#de1f27',
       '--pepsi-red-dark':  '#a81520',
       '--correct':         '#de1f27',
-      '--present':         '#1a1a2e',
+      '--present':         '#ffb600',
       '--absent':          '#555555',
       '--key-bg':          '#ffffff',
       '--key-text':        '#7a0a0e',
       '--tile-border':     '#c8960a',
+      '--header-text':     'rgba(0,0,0,0.85)',
+      '--header-text-muted': 'rgba(0,0,0,0.5)',
+      '--icon-btn-bg':     'rgba(0,0,0,0.12)',
+      '--icon-btn-border': 'rgba(0,0,0,0.2)',
     },
     bgGradient: 'linear-gradient(160deg, #fed700 0%, #ffb600 100%)',
     swatchColors: ['#fed700', '#de1f27', '#555555'],
     accentBar: 'linear-gradient(90deg, #de1f27, #fed700)',
-    tileTextColors: { correct: 'white', present: 'white', absent: 'white' },
+    tileTextColors: { correct: 'white', present: '#de1f27', absent: 'white' },
     confettiColors: ['#fed700', '#de1f27', '#ffb600', '#ffffff', '#7a0a0e'],
     emojiSrc: 'https://raw.githubusercontent.com/smassietech/Logos/refs/heads/main/Lays_2026_GraphicAssets_IconicBags_Window_Yellow_RGB.png',
   },  {
@@ -4355,16 +4363,20 @@ const THEMES = [
       '--pepsi-red':       '#d4380a',
       '--pepsi-red-dark':  '#a02c08',
       '--correct':         '#d4380a',
-      '--present':         '#7a3800',
+      '--present':         '#ffb600',
       '--absent':          '#555555',
       '--key-bg':          '#ffffff',
       '--key-text':        '#3d1a00',
       '--tile-border':     '#a05a00',
+      '--header-text':     'rgba(0,0,0,0.85)',
+      '--header-text-muted': 'rgba(0,0,0,0.5)',
+      '--icon-btn-bg':     'rgba(0,0,0,0.12)',
+      '--icon-btn-border': 'rgba(0,0,0,0.2)',
     },
     bgGradient: '#ffc140',
     swatchColors: ['#ffc140', '#d4380a', '#555555'],
     accentBar: 'linear-gradient(90deg, #d4380a, #ffc140)',
-    tileTextColors: { correct: 'white', present: 'white', absent: 'white' },
+    tileTextColors: { correct: 'white', present: '#de1f27', absent: 'white' },
     confettiColors: ['#ffc140', '#d4380a', '#ffffff', '#ffb600', '#3d1a00'],
     emojiSrc: 'https://raw.githubusercontent.com/smassietech/Logos/refs/heads/main/fritos-rgb-f-red.png',
   },
