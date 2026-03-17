@@ -3297,7 +3297,7 @@ function getPuzzleState(puzzleOrNum, dateStr = currentPuzzleDate) {
   try {
     const puzzle = (typeof puzzleOrNum === 'object' && puzzleOrNum) ? puzzleOrNum : null;
     const num = Number(puzzle ? puzzle.num : puzzleOrNum);
-    const puzzleDate = puzzle ? (puzzle.date || dateStr || currentPuzzleDate) : (dateStr || currentPuzzleDate);
+    const puzzleDate = dateStr || currentPuzzleDate;  // always keyed to real calendar date, not puzzle's origin date
 
     const scopedRaw = localStorage.getItem(gameStateKey(puzzleDate, num));
     if (scopedRaw) return JSON.parse(scopedRaw);
@@ -3315,7 +3315,7 @@ function isPuzzleCompleted(puzzleOrNum, dateStr = currentPuzzleDate) {
 
   const puzzle = (typeof puzzleOrNum === 'object' && puzzleOrNum) ? puzzleOrNum : null;
   const expectedNum = Number(puzzle ? puzzle.num : puzzleOrNum);
-  const expectedDate = puzzle ? (puzzle.date || dateStr || currentPuzzleDate) : (dateStr || currentPuzzleDate);
+  const expectedDate = dateStr || currentPuzzleDate;  // keyed to real calendar date
 
   const stateDate = state.puzzleDate || expectedDate;
   return !!(
@@ -3334,7 +3334,7 @@ function getDailyPuzzleCount() {
 function getCompletedPuzzleCount() {
   if (!todaysPuzzleSet.length) return gameOver ? 1 : 0;
   let completed = todaysPuzzleSet.filter(p => isPuzzleCompleted(p)).length;
-  if (gameOver && todaysPuzzleSet.some(p => Number(p.num) === Number(puzzleNumber) && String(p.date) === String(currentPuzzleDate))) {
+  if (gameOver && todaysPuzzleSet.some(p => Number(p.num) === Number(puzzleNumber))) {
     completed = Math.max(completed, 1);
   }
   return completed;
@@ -3503,7 +3503,7 @@ function activatePuzzle(puzzle) {
   if (!puzzle) return;
   todaysPuzzleSet = getScheduleSetForPuzzle(puzzle);
   if (!todaysPuzzleSet.length) todaysPuzzleSet = [puzzle];
-  currentPuzzleDate = puzzle.date || getLocalDateString();
+  currentPuzzleDate = getLocalDateString();  // always today's real date, not the puzzle's scheduled origin date
   targetWord = puzzle.word;
   puzzleNumber = Number(puzzle.num) || 1;
   currentHint = puzzle.hint || '';
