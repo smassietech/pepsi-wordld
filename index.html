@@ -2094,8 +2094,7 @@
         onkeydown="if(event.key==='Enter'){event.preventDefault();submitToLeaderboard();}" />
     </div>
     <div id="name-status" style="min-height:1.2em;font-size:0.78rem;color:var(--pepsi-red);margin-bottom:8px;text-align:center;"></div>
-    <button class="name-submit-btn" onclick="submitToLeaderboard()">Post My Score 🏆</button>
-    <button class="name-skip-btn" onclick="skipLeaderboard()">Skip — just show results</button>
+    <button class="name-submit-btn" onclick="submitToLeaderboard()">Join Leaderboard 🏆</button>
   </div>
 </div>
 
@@ -3299,9 +3298,25 @@ function getPuzzleState(puzzleOrNum, dateStr = currentPuzzleDate) {
     const num = Number(puzzle ? puzzle.num : puzzleOrNum);
     const puzzleDate = dateStr || currentPuzzleDate;  // always keyed to real calendar date, not puzzle's origin date
 
+    // 1. Try today's real-date key (new format)
     const scopedRaw = localStorage.getItem(gameStateKey(puzzleDate, num));
     if (scopedRaw) return JSON.parse(scopedRaw);
 
+    // 2. Migration fallback: try the puzzle's origin date key (old rotation bug format)
+    if (puzzle && puzzle.date && puzzle.date !== puzzleDate) {
+      const migrationRaw = localStorage.getItem(gameStateKey(puzzle.date, num));
+      if (migrationRaw) {
+        const migState = JSON.parse(migrationRaw);
+        // Migrate: update puzzleDate to today's real date, re-save under correct key
+        migState.puzzleDate = puzzleDate;
+        const migratedJson = JSON.stringify(migState);
+        localStorage.setItem(gameStateKey(puzzleDate, num), migratedJson);
+        localStorage.removeItem(gameStateKey(puzzle.date, num));
+        return migState;
+      }
+    }
+
+    // 3. Legacy key (very old format with no date)
     const legacyRaw = localStorage.getItem(legacyGameStateKey(num));
     return legacyRaw ? JSON.parse(legacyRaw) : null;
   } catch(e) {
@@ -3524,7 +3539,17 @@ function playNextPuzzle() {
 
 function restoreGameState() {
   try {
-    const raw = localStorage.getItem(gameStateKey()) || localStorage.getItem(legacyGameStateKey(puzzleNumber));
+    // Try today's key, then migration fallback (old puzzle.date key), then legacy no-date key
+    const todayKey = gameStateKey();
+    const originKey = todaysPuzzleSet.length
+      ? gameStateKey(todaysPuzzleSet.find(p => Number(p.num) === Number(puzzleNumber))?.date || '', puzzleNumber)
+      : '';
+    let raw = localStorage.getItem(todayKey);
+    if (!raw && originKey && originKey !== todayKey) {
+      raw = localStorage.getItem(originKey);
+      if (raw) { localStorage.setItem(todayKey, raw); localStorage.removeItem(originKey); } // migrate
+    }
+    if (!raw) raw = localStorage.getItem(legacyGameStateKey(puzzleNumber));
     if (!raw) return false;
     const state = JSON.parse(raw);
     const stateDate = state?.puzzleDate || currentPuzzleDate;
@@ -3827,7 +3852,11 @@ function onWin() {
     document.getElementById('end-word').innerHTML = `The word was <strong>${targetWord}</strong>`;
     document.getElementById('end-overlay').classList.add('show');
     if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) {
-      setTimeout(() => promptForLeaderboard(true), 800);
+      if (getStoredPlayerName()) {
+        setTimeout(() => autoPostScore(true), 800);
+      } else {
+        setTimeout(() => promptForLeaderboard(true), 800);
+      }
     }
   }, COLS * 350 + 600);
 }
@@ -3844,7 +3873,13 @@ function onLose() {
     document.getElementById('end-emoji-img').src = ACTIVE_CAN_SRC; document.getElementById('end-emoji-img').style.filter='grayscale(60%)';
     document.getElementById('end-title').textContent = 'SO CLOSE!';
     document.getElementById('end-word').innerHTML = `The word was <strong>${targetWord}</strong>`;
-    setTimeout(() => { document.getElementById('end-overlay').classList.add('show'); if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) { setTimeout(() => promptForLeaderboard(false), 800); } }, 1500);
+    setTimeout(() => { document.getElementById('end-overlay').classList.add('show'); if (!scorePostedForCurrentPuzzle && isFirebaseConfigured()) {
+        if (getStoredPlayerName()) {
+          autoPostScore(false);
+        } else {
+          setTimeout(() => promptForLeaderboard(false), 800);
+        }
+      } }, 1500);
   }, 400);
 }
 
@@ -4970,40 +5005,46 @@ function closeLeaderboard() {
 
 // Called after game ends — shows name prompt
 function promptForLeaderboard(won) {
-  const savedName = getStoredPlayerName();
-
-  // Image
+  // Only called for new players (no stored name) — returning players auto-post via autoPostScore()
   document.getElementById('name-prompt-emoji-img').src = ACTIVE_CAN_SRC;
   document.getElementById('name-prompt-emoji-img').style.filter = won ? 'none' : 'grayscale(60%)';
   document.getElementById('name-prompt-num').textContent = puzzleNumber;
 
-  const status   = document.getElementById('name-status');
+  const status    = document.getElementById('name-status');
   const returning = document.getElementById('name-returning');
   const inputWrap = document.getElementById('name-input-wrap');
-  const title    = document.getElementById('name-prompt-title');
-  const sub      = document.getElementById('name-prompt-sub');
-  const btn      = document.querySelector('.name-submit-btn');
+  const title     = document.getElementById('name-prompt-title');
+  const sub       = document.getElementById('name-prompt-sub');
+  const btn       = document.querySelector('.name-submit-btn');
   if (status) status.textContent = '';
   if (btn) btn.disabled = false;
 
-  if (savedName) {
-    // Returning player — show name, hide input
-    document.getElementById('name-returning-name').textContent = savedName;
-    if (returning) returning.style.display = '';
-    if (inputWrap) inputWrap.style.display = 'none';
-    if (title) title.textContent = 'Post Your Score';
-    if (sub) sub.textContent = 'Tap below to confirm — or skip to just see results.';
-  } else {
-    // New player
-    if (returning) returning.style.display = 'none';
-    if (inputWrap) inputWrap.style.display = '';
-    document.getElementById('name-input').value = '';
-    if (title) title.textContent = 'Add to Leaderboard';
-    if (sub) sub.textContent = "Pick a name — you'll use it every time. Names are unique, first come first served.";
-  }
+  // Always show name input — this is always a new player
+  if (returning) returning.style.display = 'none';
+  if (inputWrap) inputWrap.style.display = '';
+  document.getElementById('name-input').value = '';
+  if (title) title.textContent = 'Join the Leaderboard';
+  if (sub) sub.textContent = "Pick a name — you'll use it every time. Names are unique, first come first served.";
 
   document.getElementById('name-prompt').classList.add('show');
-  if (!savedName) setTimeout(() => document.getElementById('name-input').focus(), 300);
+  setTimeout(() => document.getElementById('name-input').focus(), 300);
+}
+
+async function autoPostScore(won) {
+  // Silently post score for returning players — no popup, just a toast
+  const name = getStoredPlayerName();
+  if (!name || !isFirebaseConfigured()) return;
+
+  const ok = await saveScore(name, won, guesses.length);
+  if (ok) {
+    scorePostedForCurrentPuzzle = true;
+    saveGameState();
+    showToast('Score posted as ' + name + ' 🏆');
+    setTimeout(() => updateDailyProgressPanel(), 600);
+  } else {
+    // Silent post failed — fall back to showing the manual prompt so they can retry
+    showToast('Could not post score — check connection');
+  }
 }
 
 async function submitToLeaderboard() {
@@ -5055,7 +5096,7 @@ async function submitToLeaderboard() {
     saveGameState();
     document.getElementById('name-prompt').classList.remove('show');
     document.getElementById('end-overlay')?.classList.add('show');
-    showToast('Score posted! 🏆');
+    showToast('Welcome to the leaderboard, ' + name + '! 🏆');
     setTimeout(() => updateDailyProgressPanel(), 600);
   } else {
     if (btn) btn.disabled = false;
